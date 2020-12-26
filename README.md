@@ -1,2 +1,6 @@
 # centos7_verilator
-Chisel3 developmetn environment with Verilator on CentOS
+Dockerfile to build Chisel3 development environment with Verilator on CentOS
+
+## Dockerfile
+
+See dockr/Dockerfile.
