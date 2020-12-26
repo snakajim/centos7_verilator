@@ -221,8 +221,7 @@ RUN passwd -d root && \
 # change setting for user & wheel group
 RUN sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
 RUN sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
-RUN mkdir -p /home/user/work && mkdir -p /home/user/tmp
-RUN su - user && scl enable devtoolset-8 bash && su -
+RUN su - user && scl enable devtoolset-8 bash && mkdir -p /home/user/work && mkdir -p /home/user/tmp && su -
 
 #  ---------------------------------------------------------------------------------
 # other tools which are recommeded to install as non-root user
