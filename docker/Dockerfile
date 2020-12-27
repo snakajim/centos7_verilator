@@ -229,9 +229,13 @@ RUN exec $SHELL -l
 #
 # Python3 libraries
 #
-RUN su - user && exec $SHELL -l
-RUN scl enable devtoolset-8 bash && mkdir -p /home/user/work && mkdir -p /home/user/tmp
-RUN sbt -version
+RUN su - user
+RUN exec $SHELL -l
+RUN scl enable devtoolset-8 bash && \
+  sudo -u user mkdir -p /home/user/work/tmp && sudo -u user mkdir -p /home/user/tmp
+RUN cd /home/user/work/tmp &&  \
+  echo "package example ;object Hello extends App { println("Hello")}" >> hello.scala && \
+  sudo -u user sbt compile
 RUN pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
