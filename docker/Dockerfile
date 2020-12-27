@@ -231,14 +231,14 @@ RUN exec $SHELL -l
 #
 RUN sudo -u user scl enable devtoolset-8 bash && \
   sudo -u user mkdir -p /home/user/work/tmp && sudo -u user mkdir -p /home/user/tmp
-RUN sudo -u user sh -c "mkdir -p ${HOME}/work/MyProject && cd ${HOME}/work/MyProject
-  git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1
-  git clone https://github.com/chipsalliance/treadle.git -b v1.3.1
-  pushd firrtl; sbt publishLocal; popd
-  pushd treadle; sbt publishLocal; popd
-  git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1
-  cd chisel3
-  sbt compile
+RUN sudo -u user sh -c "mkdir -p ${HOME}/work/MyProject && cd ${HOME}/work/MyProject && \
+  git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1 && \
+  git clone https://github.com/chipsalliance/treadle.git -b v1.3.1 && \
+  pushd firrtl; sbt publishLocal; popd && \
+  pushd treadle; sbt publishLocal; popd && \
+  git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1 && \
+  cd chisel3 && \
+  sbt compile && \
   sbt test" 
 RUN sudo -u user pip3 install pyyaml numpy pandas openpyxl pydot
 #
