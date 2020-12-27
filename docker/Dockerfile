@@ -229,26 +229,24 @@ RUN exec $SHELL -l
 #
 # Python3 libraries
 #
-RUN su - user
-RUN exec $SHELL -l
-RUN scl enable devtoolset-8 bash && \
+RUN sudo -u user scl enable devtoolset-8 bash && \
   sudo -u user mkdir -p /home/user/work/tmp && sudo -u user mkdir -p /home/user/tmp
 RUN cd /home/user/work/tmp &&  \
-  echo "package example ;object Hello extends App { println("Hello")}" >> hello.scala && \
-  sbt compile && sbt run 
-RUN pip3 install pyyaml numpy pandas openpyxl pydot
+  sudo -u user echo "package example ;object Hello extends App { println("Hello")}" >> hello.scala && \
+  sudo -u user sbt compile && sudo -u user sbt run 
+RUN sudo -u user pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
 #
-RUN cd ${HOME}/tmp && git clone https://github.com/tokuhirom/plenv.git \
+RUN sudo -u user cd ${HOME}/tmp && sudo -u user git clone https://github.com/tokuhirom/plenv.git \
     ${HOME}/.plenv
-RUN cd ${HOME}/tmp && git clone https://github.com/tokuhirom/Perl-Build.git \
+RUN sudo -u user cd ${HOME}/tmp && sudo -u user git clone https://github.com/tokuhirom/Perl-Build.git \
     ${HOME}/.plenv/plugins/perl-build/
-RUN echo "# " >> ${HOME}/.bash_profile
-RUN echo "# adding plenv path" >> ${HOME}/.bash_profile
-RUN echo "export PATH=~/.plenv/bin:\$PATH" >>  ${HOME}/.bash_profile
-RUN echo 'eval "$(plenv init -)"' >> ${HOME}/.bash_profile    
+RUN sudo -u user echo "# " >> ${HOME}/.bash_profile
+RUN sudo -u user echo "# adding plenv path" >> ${HOME}/.bash_profile
+RUN sudo -u user echo "export PATH=~/.plenv/bin:\$PATH" >>  ${HOME}/.bash_profile
+RUN sudo -u user echo 'eval "$(plenv init -)"' >> ${HOME}/.bash_profile    
 #
 # MS VS Code for linux
 #
@@ -259,7 +257,6 @@ RUN sudo yum check-update && sudo yum -y install code
 #  ---------------------------------------------------------------------------------
 # reset container
 #  ---------------------------------------------------------------------------------
-RUN su - 
 RUN rm -rf /root/tmp/*
 CMD /sbin/init
 CMD echo "now build completed...nsatoshi/centos7-verilator"
