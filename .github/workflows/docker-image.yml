@@ -15,5 +15,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-    run: docker build ./docker --file ./docker/Dockerfile --tag my-image-name:$(date +%s)
-    run: docker push nsatoshi/centos7-verilator:latest
+    run: docker build . --file ./docker/Dockerfile --tag my-image-name:$(date +%s)
+
