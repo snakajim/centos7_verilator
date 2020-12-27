@@ -235,7 +235,7 @@ RUN scl enable devtoolset-8 bash && \
   sudo -u user mkdir -p /home/user/work/tmp && sudo -u user mkdir -p /home/user/tmp
 RUN cd /home/user/work/tmp &&  \
   echo "package example ;object Hello extends App { println("Hello")}" >> hello.scala && \
-  sudo -u user sbt compile
+  sbt compile && sbt run 
 RUN pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
