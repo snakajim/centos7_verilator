@@ -221,10 +221,7 @@ RUN passwd -d root && \
 # change setting for user & wheel group
 RUN sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
 RUN sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
-RUN su - user && \
-  scl enable devtoolset-8 bash && mkdir -p /home/user/work && mkdir -p /home/user/tmp && \
-  sbt exit && \
-  su -
+RUN exec $SHELL -l
 
 #  ---------------------------------------------------------------------------------
 # other tools which are recommeded to install as non-root user
@@ -232,7 +229,9 @@ RUN su - user && \
 #
 # Python3 libraries
 #
-RUN su - user
+RUN su - user && exec $SHELL -l
+RUN scl enable devtoolset-8 bash && mkdir -p /home/user/work && mkdir -p /home/user/tmp
+RUN sbt -version
 RUN pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
