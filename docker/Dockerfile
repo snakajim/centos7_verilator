@@ -230,16 +230,13 @@ RUN exec $SHELL -l
 # SBT/Chisel3 and Python3 libraries
 #
 RUN sudo -u user scl enable devtoolset-8 bash && \
-  sudo -u user mkdir -p /home/user/work/tmp && sudo -u user mkdir -p /home/user/tmp
-RUN sudo -u user sh -c "mkdir -p ${HOME}/work/MyProject && cd ${HOME}/work/MyProject && \
-  git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1 && \
-  git clone https://github.com/chipsalliance/treadle.git -b v1.3.1 && \
-  pushd firrtl; sbt publishLocal; popd && \
-  pushd treadle; sbt publishLocal; popd && \
-  git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1 && \
-  cd chisel3 && \
-  sbt compile && \
-  sbt test" 
+  sudo -u user mkdir -p ${HOME}/work/MyProject && sudo -u user mkdir -p /home/user/tmp
+RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1
+RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/treadle.git -b v1.3.1
+RUN cd /home/user/work/MyProject && pushd firrtl; sudo -u user sbt publishLocal; popd
+RUN cd /home/user/work/MyProject && pushd treadle; sudo -u user sbt publishLocal; popd
+RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1
+RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt compile && sudo -u user sbt run 
 RUN sudo -u user pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
