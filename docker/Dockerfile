@@ -236,7 +236,9 @@ RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/ch
 RUN cd /home/user/work/MyProject && pushd firrtl; sudo -u user sbt publishLocal; popd
 RUN cd /home/user/work/MyProject && pushd treadle; sudo -u user sbt publishLocal; popd
 RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1
-RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt compile && sudo -u user sbt run 
+RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt -version
+RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt compile
+RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt run 
 RUN sudo -u user pip3 install pyyaml numpy pandas openpyxl pydot
 #
 # Plenv to switch perl version
