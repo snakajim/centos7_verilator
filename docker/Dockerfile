@@ -230,7 +230,7 @@ RUN exec $SHELL -l
 # SBT/Chisel3 and Python3 libraries
 #
 RUN sudo -u user scl enable devtoolset-8 bash && \
-  sudo -u user mkdir -p ${HOME}/work/MyProject && sudo -u user mkdir -p /home/user/tmp
+  sudo -u user mkdir -p /home/user/work/MyProject && sudo -u user mkdir -p /home/user/tmp
 RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1
 RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/treadle.git -b v1.3.1
 RUN cd /home/user/work/MyProject && pushd firrtl; sudo -u user sbt publishLocal; popd
@@ -242,14 +242,14 @@ RUN sudo -u user pip3 install pyyaml numpy pandas openpyxl pydot
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
 #
-RUN sudo -u user cd ${HOME}/tmp && sudo -u user git clone https://github.com/tokuhirom/plenv.git \
-    ${HOME}/.plenv
-RUN sudo -u user cd ${HOME}/tmp && sudo -u user git clone https://github.com/tokuhirom/Perl-Build.git \
-    ${HOME}/.plenv/plugins/perl-build/
-RUN sudo -u user echo "# " >> ${HOME}/.bash_profile
-RUN sudo -u user echo "# adding plenv path" >> ${HOME}/.bash_profile
-RUN sudo -u user echo "export PATH=~/.plenv/bin:\$PATH" >>  ${HOME}/.bash_profile
-RUN sudo -u user echo 'eval "$(plenv init -)"' >> ${HOME}/.bash_profile    
+RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/plenv.git \
+    /home/user/.plenv
+RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/Perl-Build.git \
+    /home/user/.plenv/plugins/perl-build/
+RUN cd /home/user && sudo -u user echo "# " >> .bash_profile
+RUN cd /home/user && sudo -u user echo "# adding plenv path" >> .bash_profile
+RUN cd /home/user && sudo -u user echo "export PATH=~/.plenv/bin:\$PATH" >> .bash_profile
+RUN cd /home/user && sudo -u user echo 'eval "$(plenv init -)"' >> .bash_profile    
 #
 # MS VS Code for linux
 #
