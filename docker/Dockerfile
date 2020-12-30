@@ -229,16 +229,18 @@ RUN exec $SHELL -l
 #
 # SBT/Chisel3 and Python3 libraries
 #
+# set gcc to 8
 RUN sudo -u user scl enable devtoolset-8 bash && \
   sudo -u user mkdir -p /home/user/work/MyProject && sudo -u user mkdir -p /home/user/tmp
-RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/firrtl.git  -b v1.4.1
-RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/treadle.git -b v1.3.1
-RUN cd /home/user/work/MyProject && pushd firrtl; sudo -u user sbt publishLocal; popd
-RUN cd /home/user/work/MyProject && pushd treadle; sudo -u user sbt publishLocal; popd
-RUN cd /home/user/work/MyProject && sudo -u user git clone https://github.com/chipsalliance/chisel3.git -b v3.4.1
-RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt -version
-RUN cd /home/user/work/MyProject/chisel3 && sudo -u user sbt compile
-RUN pip3 install pyyaml numpy pandas openpyxl pydot
+# install firrtl v1.4.1
+RUN sudo -u user sh -c "git clone https://github.com/freechipsproject/firrtl.git -b v1.4.1 \${HOME}/.firrtl"
+RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt compile && sbt test"
+RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt assembly"
+RUN sudo -u user sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
+RUN sudo -u user sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
+RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
+# install some of useful modules
+RUN sudo -u user sh -c "pip3 install pyyaml numpy pandas openpyxl pydot"
 #
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
@@ -247,10 +249,9 @@ RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/ple
     /home/user/.plenv
 RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/Perl-Build.git \
     /home/user/.plenv/plugins/perl-build/
-RUN cd /home/user && sudo -u user echo "# " >> .bash_profile
-RUN cd /home/user && sudo -u user echo "# adding plenv path" >> .bash_profile
-RUN cd /home/user && sudo -u user echo "export PATH=~/.plenv/bin:\$PATH" >> .bash_profile
-RUN cd /home/user && sudo -u user echo 'eval "$(plenv init -)"' >> .bash_profile    
+RUN sudo -u user sh -c "cd \${HOME} && echo '# adding plenv path' >> .bash_profile"
+RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\${HOME}/.plenv/bin:\$PATH' >> .bash_profile"
+RUN sudo -u user sh -c "cd \${HOME} && echo 'eval "$(plenv init -)"' >> .bash_profile"
 #
 # MS VS Code for linux
 #
