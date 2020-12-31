@@ -67,7 +67,7 @@ RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
 RUN yum -y install python3 python3-devel python3-pip
 RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync sudo
-RUN pip3 install z3-solver
+RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 
 #  ---------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ RUN exec $SHELL -l
 # other tools which are recommeded to install as non-root user
 #  ---------------------------------------------------------------------------------
 #
-# SBT/Chisel3 and Python3 libraries
+# SBT/Chisel3
 #
 # set gcc to 8
 RUN sudo -u user scl enable devtoolset-8 bash && \
@@ -239,8 +239,6 @@ RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt assembly"
 RUN sudo -u user sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
 RUN sudo -u user sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
 RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
-# install some of useful modules
-RUN sudo -u user sh -c "pip3 install pyyaml numpy pandas openpyxl pydot"
 #
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
