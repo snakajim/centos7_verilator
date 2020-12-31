@@ -234,7 +234,7 @@ RUN sudo -u user scl enable devtoolset-8 bash && \
   sudo -u user mkdir -p /home/user/work/MyProject && sudo -u user mkdir -p /home/user/tmp
 # install firrtl v1.4.1
 RUN sudo -u user sh -c "git clone https://github.com/freechipsproject/firrtl.git -b v1.4.1 \${HOME}/.firrtl"
-RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt compile && sbt test"
+RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt compile"
 RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt assembly"
 RUN sudo -u user sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
 RUN sudo -u user sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
