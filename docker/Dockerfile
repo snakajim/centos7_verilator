@@ -245,8 +245,6 @@ RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt compile"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt test"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
 
-
-sbt
 #
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
