@@ -239,7 +239,7 @@ RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt assembly"
 RUN sudo -u user sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
 RUN sudo -u user sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
 RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
-# install sv2chisele
+# install sv2chisel
 RUN sudo -u user sh -c "git clone https://github.com/ovh/sv2chisel.git \${HOME}/.sv2chisel"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt compile"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt test"
