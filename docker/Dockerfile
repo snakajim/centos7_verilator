@@ -208,15 +208,9 @@ RUN cd /etc/skel && \
 # force lld to use instead of ld.
 RUN rm -f /usr/bin/ld && ln -s  /usr/local/llvm_1100/bin/lld /usr/bin/ld
 
-# --------------------------------------------
-# Downlaod ACL v20.11 and dependencies
-# --------------------------------------------
-RUN sudo -u user sh -c "mkdir -p \${HOME}/acl_2011 && cd \${HOME}/acl_2011 && git clone https://github.com/ARM-software/ComputeLibrary.git -b v20.11"
-RUN sudo yum install -y scons
-
-# --------------------------------------------------------
+#
 # Install aarch64-linux gnu Version 10.2-2020.11 
-# --------------------------------------------------------
+#
 RUN cd ${HOME}/tmp && \
   aria2c -x10 https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz && \
   unxz gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz && \
@@ -279,6 +273,12 @@ RUN sudo -u user sh -c "git clone https://github.com/ovh/sv2chisel.git \${HOME}/
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt compile"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt test"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
+
+#
+# Downlaod ACL v20.11 and dependencies
+#
+RUN sudo -u user sh -c "mkdir -p \${HOME}/acl_2011 && cd \${HOME}/acl_2011 && git clone https://github.com/ARM-software/ComputeLibrary.git -b v20.11"
+RUN sudo yum install -y scons
 
 #
 # Plenv to switch perl version
