@@ -205,6 +205,41 @@ RUN cd /etc/skel && \
   echo "export LLVM_DIR=/usr/local/llvm_1100">> .bashrc
 RUN cd /etc/skel && \
   echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
+# force lld to use instead of ld.
+RUN rm -f /usr/bin/ld && ln -s  /usr/local/llvm_1100/bin/lld /usr/bin/ld
+
+# --------------------------------------------
+# Downlaod ACL v20.11 and dependencies
+# --------------------------------------------
+RUN sudo -u user sh -c "mkdir -p \${HOME}/acl_2011 && cd \${HOME}/acl_2011 && git clone https://github.com/ARM-software/ComputeLibrary.git -b v20.11"
+RUN sudo yum install -y scons
+
+# --------------------------------------------------------
+# Install aarch64-linux gnu Version 10.2-2020.11 
+# --------------------------------------------------------
+RUN cd ${HOME}/tmp && \
+  aria2c -x10 https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz && \
+  unxz gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz && \
+  tar xvf gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar -C /usr/local
+RUN cd /root && \
+  echo "# " >> .bashrc
+RUN cd /root && \
+  echo "# aarch64-linux-gnu- setting" >> .bashrc
+RUN cd /root && \
+  echo "export AARCH64_LINUX_GNU_DIR=/usr/local/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu">> .bashrc
+RUN cd /root && \
+  echo "export PATH=\$AARCH64_LINUX_GNU_DIR/bin:\$PATH" >> .bashrc
+
+RUN cd /etc/skel && \
+  echo "# " >> .bashrc
+RUN cd /etc/skel && \
+  echo "# aarch64-linux-gnu- setting" >> .bashrc
+RUN cd /etc/skel && \
+  echo "export AARCH64_LINUX_GNU_DIR=/usr/local/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu">> .bashrc
+RUN cd /etc/skel && \
+  echo "export PATH=\$AARCH64_LINUX_GNU_DIR/bin:\$PATH" >> .bashrc
+# In clang command option, please add
+# --target=aarch64-linux-gnu -I/usr/include/c++/4.8.2/x86_64-redhat-linux -I/usr/include/c++/4.8.2/x86_64-redhat-linux/bits
 
 #  ---------------------------------------------------------------------------------
 # install sbt(Scalar Build Tool)
