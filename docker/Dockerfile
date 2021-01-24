@@ -62,7 +62,7 @@ RUN echo "include_only=.jp" >> /etc/yum/pluginconf.d/fastestmirror.conf
 RUN yum clean all
 RUN yum -y install kernel-devel kernel-headers
 RUN yum -y install cmake git wget.x86_64 tar java motif xterm emacs nano 
-RUN yum -y install xz rclone tkcvs graphviz xxd gtkwave 
+RUN yum -y install xz rclone tkcvs graphviz xxd gtkwave time
 RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
 RUN yum -y install python3 python3-devel python3-pip
@@ -275,10 +275,12 @@ RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt test"
 RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
 
 #
-# Downlaod ACL v20.11 and dependencies
+# Downlaod ACL v20.11, dependencies and patching ComputeLibrary/SConstruct for cross compile.
 #
 RUN sudo -u user sh -c "mkdir -p \${HOME}/acl_2011 && cd \${HOME}/acl_2011 && git clone https://github.com/ARM-software/ComputeLibrary.git -b v20.11"
 RUN sudo yum install -y scons
+RUN sudo -u user sh -c "cd \${HOME}/acl_2011/ComputeLibrary && perl -pe 's/armv8\.2-a\+fp16'/armv8\.2-a\+fp16\+dotprod'/g' -i ./SConstruct"
+RUN sudo -u user sh -c "cd \${HOME}/acl_2011/ComputeLibrary && perl -pe 's/aarch64-linux-gnu-/aarch64-none-linux-gnu-/g' -i ./SConstruct"
 
 #
 # Plenv to switch perl version
