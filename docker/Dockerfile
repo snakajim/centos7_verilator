@@ -305,4 +305,4 @@ RUN sudo yum check-update && sudo yum -y install code
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
 CMD /sbin/init
-CMD echo "now build completed... > docker push snakajim/centos7-verilator"
+CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
