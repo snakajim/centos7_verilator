@@ -26,10 +26,9 @@
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
-# $> docker run -it --name eda -u user --privileged --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda -u user0 --privileged --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
 #
 FROM centos:7
-# User info
 LABEL maintainer="nsatoshi"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
@@ -61,11 +60,12 @@ RUN echo "now building...."
 RUN echo "include_only=.jp" >> /etc/yum/pluginconf.d/fastestmirror.conf
 RUN yum clean all
 RUN yum -y install kernel-devel kernel-headers
-RUN yum -y install cmake git wget.x86_64 tar java motif xterm emacs nano 
+RUN yum -y install cmake git wget.x86_64 tar motif xterm emacs nano 
 RUN yum -y install xz rclone tkcvs graphviz xxd gtkwave time
 RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
-RUN yum -y install python3 python3-devel python3-pip
+RUN yum -y install python3 python3-devel python3-pip scons
+RUN yum -y install openssh-server openssh-clients
 RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync sudo
 RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
@@ -84,24 +84,8 @@ RUN scl enable devtoolset-8 bash
 RUN mkdir -p ${HOME}/tmp
 
 #
-# install the git 2.28.0
+# switching default gcc and g++ to version-8.
 #
-RUN cd ${HOME}/tmp && \
-  aria2c -x10 https://www.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz &&\
-  tar -zxf git-2.28.0.tar.gz && cd git-2.28.0 && \
-  make configure && ./configure --prefix=/usr && make -j12 && \
-  make install
-RUN cd ${HOME}/tmp/git-2.28.0 && make clean
-
-#
-# install the cmake 3.18.4 
-#
-RUN cd ${HOME}/tmp && \
-  aria2c -x10 https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz &&\
-  tar -zxf cmake-3.18.4.tar.gz && cd cmake-3.18.4 && \
-  ./configure --prefix=/usr && make -j12 && \
-  make install
-RUN cd ${HOME}/tmp/cmake-3.18.4 && make clean 
 
 RUN cd /root && \
   echo "# " >> .bashrc
@@ -140,24 +124,53 @@ RUN cd /etc/skel && \
   echo "export CC=/opt/rh/devtoolset-8/root/usr/bin/gcc" >> .bashrc
 
 #
-# install verilator 4102
+# install the git 2.28.0
+#
+RUN cd ${HOME}/tmp && \
+  aria2c -x10 https://www.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz &&\
+  tar -zxf git-2.28.0.tar.gz && cd git-2.28.0 && \
+  make configure && \
+  ./configure --prefix=/usr \
+  CC=/opt/rh/devtoolset-8/root/usr/bin/gcc \
+  CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ && \
+  make -j`nproc` && make install
+RUN cd ${HOME}/tmp/git-2.28.0 && make clean
+
+#
+# install the cmake 3.18.4 
+#
+RUN cd ${HOME}/tmp && \
+  aria2c -x10 https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz &&\
+  tar -zxf cmake-3.18.4.tar.gz && cd cmake-3.18.4 && \
+  ./configure --prefix=/usr \
+  CC=/opt/rh/devtoolset-8/root/usr/bin/gcc \
+  CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ && \
+  make -j`nproc` && make install
+RUN cd ${HOME}/tmp/cmake-3.18.4 && make clean 
+
+#
+# install verilator 4_${VERILATOR_REV}
 #
 RUN source ${HOME}/.bashrc
 RUN unset VERILATOR_ROOT 
-RUN cd ${HOME}/tmp && mkdir -p verilator && wget --no-check-certificate https://github.com/verilator/verilator/tarball/v4.102 -O verilator-v4.102.tgz
-RUN cd ${HOME}/tmp && tar -xvf verilator-v4.102.tgz -C verilator --strip-components 1
+ENV VERILATOR_REV=210
+RUN cd ${HOME}/tmp && mkdir -p verilator && wget --no-check-certificate https://github.com/verilator/verilator/tarball/v4.${VERILATOR_REV} -O verilator-v4.${VERILATOR_REV}.tgz
+RUN cd ${HOME}/tmp && tar -xvf verilator-v4.${VERILATOR_REV}.tgz -C verilator --strip-components 1
 RUN cd ${HOME}/tmp/verilator && autoconf && \
-  ./configure --prefix=/usr/local/verilator_4102 && make -j12 && \
+  ./configure --prefix=/usr/local/verilator_4_${VERILATOR_REV} \
+  CC=/opt/rh/devtoolset-8/root/usr/bin/gcc \
+  CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ && \
+  make -j`nproc` && \
   make install  
 RUN cd ${HOME}/tmp/verilator && make clean
-RUN ln -sf /usr/local/verilator_4102/bin/verilator* /usr/local/verilator_4102/share/verilator/bin/
+RUN ln -sf /usr/local/verilator_4_${VERILATOR_REV}/bin/verilator* /usr/local/verilator_4_${VERILATOR_REV}/share/verilator/bin/
 
 RUN cd /root && \
   echo "# " >> .bashrc
 RUN cd /root && \
   echo "# verilator setting" >> .bashrc
 RUN cd /root && \
-  echo "export VERILATOR_ROOT=/usr/local/verilator_4102/share/verilator">> .bashrc
+  echo "export VERILATOR_ROOT=/usr/local/verilator_4_${VERILATOR_REV}/share/verilator">> .bashrc
 RUN cd /root && \
   echo "export PATH=\$VERILATOR_ROOT/bin:\$PATH" >>  .bashrc
 
@@ -166,34 +179,34 @@ RUN cd /etc/skel && \
 RUN cd /etc/skel && \
   echo "# verilator setting" >> .bashrc
 RUN cd /etc/skel && \
-  echo "export VERILATOR_ROOT=/usr/local/verilator_4102/share/verilator">> .bashrc
+  echo "export VERILATOR_ROOT=/usr/local/verilator_4_${VERILATOR_REV}/share/verilator">> .bashrc
 RUN cd /etc/skel && \
   echo "export PATH=\$VERILATOR_ROOT/bin:\$PATH" >> .bashrc
 
 #
-# install llvm11.0.0
+# install llvm12.0.1
 #
-RUN cd ${HOME}/tmp && aria2c -x10 https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/llvm-project-11.0.0.tar.xz
-RUN cd ${HOME}/tmp && unxz llvm-project-11.0.0.tar.xz && \
-  tar xvf llvm-project-11.0.0.tar && \
-  cd llvm-project-11.0.0 && mkdir -p build && cd build && \
+RUN cd ${HOME}/tmp && aria2c -x10 https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.1/llvm-project-12.0.1.src.tar.xz
+RUN cd ${HOME}/tmp && unxz llvm-project-12.0.1.src.tar.xz && \
+  tar xvf llvm-project-12.0.1.src.tar && \
+  cd llvm-project-12.0.1.src && mkdir -p build && cd build && \
   cmake -G Ninja -G "Unix Makefiles" \
     -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/gcc" \
     -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/g++" \
     -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld" \
     -DCMAKE_BUILD_TYPE=RELEASE \
     -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64"\
-    -DCMAKE_INSTALL_PREFIX="/usr/local/llvm_1100" \
-    ../llvm && make -j12 && \
+    -DCMAKE_INSTALL_PREFIX="/usr/local/llvm_1201" \
+    ../llvm && make -j`nproc` && \
     make install
-RUN cd ${HOME}/tmp/llvm-project-11.0.0/build && make clean
+RUN cd ${HOME}/tmp/llvm-project-12.0.1.src/build && make clean
 
 RUN cd /root && \
   echo "# " >> .bashrc
 RUN cd /root && \
   echo "# LLVM setting" >> .bashrc
 RUN cd /root && \
-  echo "export LLVM_DIR=/usr/local/llvm_1100">> .bashrc
+  echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
 RUN cd /root && \
   echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
 
@@ -202,11 +215,11 @@ RUN cd /etc/skel && \
 RUN cd /etc/skel && \
   echo "# LLVM setting" >> .bashrc
 RUN cd /etc/skel && \
-  echo "export LLVM_DIR=/usr/local/llvm_1100">> .bashrc
+  echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
 RUN cd /etc/skel && \
   echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
 # force lld to use instead of ld.
-RUN rm -f /usr/bin/ld && ln -s  /usr/local/llvm_1100/bin/lld /usr/bin/ld
+RUN rm -f /usr/bin/ld && ln -s  /usr/local/llvm_1201/bin/lld /usr/bin/ld
 
 #
 # Install aarch64-linux gnu Version 10.2-2020.11 
@@ -238,16 +251,35 @@ RUN cd /etc/skel && \
 #  ---------------------------------------------------------------------------------
 # install sbt(Scalar Build Tool)
 #  ---------------------------------------------------------------------------------
-RUN curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-RUN yum -y install sbt
+RUN rm -f /etc/yum.repos.d/bintray-rpm.repo
+RUN mkdir -p ${HOME}/work && cd ${HOME}/work && curl -L https://www.scala-sbt.org/sbt-rpm.repo > sbt-rpm.repo
+RUN mv ${HOME}/work/sbt-rpm.repo /etc/yum.repos.d/
+RUN yum -y install sbt-1.5.5-0.noarch
+
+#
+# install MS VS Code for linux
+#
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
+RUN sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+RUN yum check-update && sudo yum -y install code
+RUN yum clean all
+
+#
+# set sshd_config, exporse port 22 and start sshd daemon
+#
+RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
+RUN sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
 
 # ---------------------------------------------------------------------------------
-# user add with sudo authority
+# user0 add with sudo authority
 # ---------------------------------------------------------------------------------
 RUN passwd -d root && \
-  useradd -m user && passwd -d user && \
-  usermod -aG wheel user && chsh -s /bin/bash user
-# change setting for user & wheel group
+  useradd -m user0 && passwd -d user0 && \
+  usermod -aG wheel user0 && chsh -s /bin/bash user0
+# change setting for user0 & wheel group
 RUN sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
 RUN sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
 RUN exec $SHELL -l
@@ -259,50 +291,43 @@ RUN exec $SHELL -l
 # SBT/Chisel3
 #
 # set gcc to 8
-RUN sudo -u user scl enable devtoolset-8 bash && \
-  sudo -u user mkdir -p /home/user/work/MyProject && sudo -u user mkdir -p /home/user/tmp
+RUN sudo -u user0 sh -c "scl enable devtoolset-8 bash"
+RUN sudo -u user0 sh -c "mkdir -p \${HOME}/work/MyProject"
+RUN sudo -u user0 sh -c "mkdir -p \${HOME}/tmp"
 # install firrtl v1.4.1
-RUN sudo -u user sh -c "git clone https://github.com/freechipsproject/firrtl.git -b v1.4.1 \${HOME}/.firrtl"
-RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt compile"
-RUN sudo -u user sh -c "cd \${HOME}/.firrtl && sbt assembly"
-RUN sudo -u user sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
-RUN sudo -u user sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
-RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
+RUN sudo -u user0 sh -c "git clone --depth=1 https://github.com/freechipsproject/firrtl.git -b v1.4.3 \${HOME}/.firrtl"
+RUN sudo -u user0 sh -c "cd \${HOME}/.firrtl && sbt compile"
+RUN sudo -u user0 sh -c "cd \${HOME}/.firrtl && sbt assembly"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
 # install sv2chisel
-RUN sudo -u user sh -c "git clone https://github.com/ovh/sv2chisel.git \${HOME}/.sv2chisel"
-RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt compile"
-RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt test"
-RUN sudo -u user sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
+RUN sudo -u user0 sh -c "git clone --depth=1 https://github.com/ovh/sv2chisel.git \${HOME}/.sv2chisel"
+RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt compile"
+RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt test"
+RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
 
 #
-# Downlaod ACL v20.11, dependencies and patching ComputeLibrary/SConstruct for cross compile.
+# Downlaod ACL v21.05, dependencies and patching ComputeLibrary/SConstruct for cross compile.
 #
-RUN sudo -u user sh -c "mkdir -p \${HOME}/acl_2011 && cd \${HOME}/acl_2011 && git clone https://github.com/ARM-software/ComputeLibrary.git -b v20.11"
-RUN sudo yum install -y scons
-RUN sudo -u user sh -c "cd \${HOME}/acl_2011/ComputeLibrary && perl -pe 's/armv8\.2-a\+fp16'/armv8\.2-a\+fp16\+dotprod'/g' -i ./SConstruct"
-RUN sudo -u user sh -c "cd \${HOME}/acl_2011/ComputeLibrary && perl -pe 's/aarch64-linux-gnu-/aarch64-none-linux-gnu-/g' -i ./SConstruct"
+RUN sudo -u user0 sh -c "mkdir -p \${HOME}/acl && cd \${HOME}/acl && git clone --depth=1 https://github.com/ARM-software/ComputeLibrary.git -b v21.05"
+RUN sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/armv8\.2-a\+fp16'/armv8\.2-a\+fp16\+dotprod'/g' -i ./SConstruct"
+RUN sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/aarch64-linux-gnu-/aarch64-none-linux-gnu-/g' -i ./SConstruct"
 
 #
 # Plenv to switch perl version
 # https://github.com/tokuhirom/plenv.git
 #
-RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/plenv.git \
-    /home/user/.plenv
-RUN cd /home/user/tmp && sudo -u user git clone https://github.com/tokuhirom/Perl-Build.git \
-    /home/user/.plenv/plugins/perl-build/
-RUN sudo -u user sh -c "cd \${HOME} && echo '# adding plenv path' >> .bash_profile"
-RUN sudo -u user sh -c "cd \${HOME} && echo 'export PATH=\${HOME}/.plenv/bin:\$PATH' >> .bash_profile"
-RUN sudo -u user sh -c "cd \${HOME} && echo 'eval "$(plenv init -)"' >> .bash_profile"
-#
-# MS VS Code for linux
-#
-RUN sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-RUN sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-RUN sudo yum check-update && sudo yum -y install code
+RUN sudo -u user0 sh -c "git clone --depth=1 -b 2.3.1 https://github.com/tokuhirom/plenv.git \${HOME}/.plenv"
+RUN sudo -u user0 sh -c "git clone --depth=1 -b 1.32 https://github.com/tokuhirom/Perl-Build.git \${HOME}/.plenv/plugins/perl-build/"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo '# adding plenv path' >> .bash_profile"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export PATH=\${HOME}/.plenv/bin:\$PATH' >> .bash_profile"
+RUN sudo -u user0 sh -c "cd \${HOME} && echo 'eval "$(\${HOME}/.plenv/bin/plenv init -)"' >> .bash_profile"
 
 #  ---------------------------------------------------------------------------------
 # reset container
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
+RUN cd /home/user0
 CMD /sbin/init
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
