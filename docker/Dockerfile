@@ -18,7 +18,7 @@
 #
 # ---------------------------------
 # Dockerfile for centos7_verilator
-# Copyright [2020] by snakajim(https://github.com/snakajim)
+# Copyright [2020-2021] by snakajim(https://github.com/snakajim)
 # ---------------------------------
 #
 # 1. To build
@@ -26,7 +26,11 @@
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
-# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda -u user0 --privileged --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda --hostname cs7 -u user0 --privileged --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+# 3. To access from host via ssh
+# $> ssh -p 20022 user0@localhost
+# or
+# $> ssh -p 20022 root@localhost (as "root" passwd)
 #
 FROM centos:7
 LABEL maintainer="nsatoshi"
@@ -47,6 +51,18 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 VOLUME [ "/sys/fs/cgroup" ]
+CMD ["/usr/sbin/init"]
+#
+# 2020/Nov/08, patch for systemd enable.(httpd)
+# See https://hub.docker.com/_/centos?tab=description, Systemd integration
+#
+RUN yum -y install httpd; yum clean all; systemctl enable httpd.service
+EXPOSE 80
+CMD ["/usr/sbin/init"]
+
+#
+# install standard apps
+#
 RUN yum -y install epel-release
 RUN yum -y install elrepo-release
 RUN yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
@@ -267,17 +283,17 @@ RUN yum clean all
 #
 # set sshd_config, exporse port 22 and start sshd daemon
 #
+RUN echo 'root:root' | chpasswd
 RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
-RUN sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
 
 # ---------------------------------------------------------------------------------
 # user0 add with sudo authority
 # ---------------------------------------------------------------------------------
-RUN passwd -d root && \
-  useradd -m user0 && passwd -d user0 && \
+RUN useradd -m user0 && passwd -d user0 && \
   usermod -aG wheel user0 && chsh -s /bin/bash user0
 # change setting for user0 & wheel group
 RUN sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
