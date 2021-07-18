@@ -11,7 +11,15 @@ echo "root:root"   | chpasswd
 # change setting for user0 & wheel group
 sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
 sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
-exec $SHELL -l
+
+# ---------------------------------------------------------------------------------
+# user0 ssh key pair setting
+# ---------------------------------------------------------------------------------
+sudo -u user0 sh -c "mkdir -p \${HOME}/.ssh"
+sudo -u user0 sh -c "touch \${HOME}/.ssh/authorized_keys"
+sudo -u user0 sh -c "ssh-keygen -t rsa -f \${HOME}/.ssh/id_rsa_docker_user0 -N '' "
+sudo -u user0 sh -c "cat \${HOME}/.ssh/id_rsa_docker_user0.pub >> \${HOME}/.ssh/authorized_keys" 
+sudo -u user0 sh -c "chmod 600 \${HOME}/.ssh/authorized_keys"
 
 #  ---------------------------------------------------------------------------------
 # other tools which are recommeded to install as non-root user

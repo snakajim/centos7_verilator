@@ -3,7 +3,8 @@
 # HOW TO run
 # $> docker run -itd -p 20022:22 ssh-test:latest
 # HOW TO connect
-# $> ssh -p 2222 user0@localhost
+# $> ssh -p 20022 user0@localhost
+# where your passwd is user0
 #
 # Please refer
 # https://pocketcode.net/docker-centos7-ssh-connect
