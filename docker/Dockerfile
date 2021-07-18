@@ -272,9 +272,9 @@ RUN mkdir -p ${HOME}/work && cd ${HOME}/work && curl -L https://www.scala-sbt.or
 RUN mv ${HOME}/work/sbt-rpm.repo /etc/yum.repos.d/
 RUN yum -y install sbt-1.5.5-0.noarch
 
-#
+#  ---------------------------------------------------------------------------------
 # set sshd_config, exporse port 22
-#
+#  ---------------------------------------------------------------------------------
 RUN mkdir /var/run/sshd
 RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
@@ -283,7 +283,7 @@ RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
 EXPOSE 22
 
 #  ---------------------------------------------------------------------------------
-# install user apps
+# install user apps by start.sh
 #  ---------------------------------------------------------------------------------
 ADD ./start.sh /start.sh
 RUN chmod 755 /start.sh
