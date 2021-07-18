@@ -26,7 +26,7 @@
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
-# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda --hostname cs7 -u user0 --privileged --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda --hostname cs7 --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
 # 3. To access from host via ssh
 # $> ssh -p 20022 user0@localhost
 # or
@@ -273,77 +273,27 @@ RUN mv ${HOME}/work/sbt-rpm.repo /etc/yum.repos.d/
 RUN yum -y install sbt-1.5.5-0.noarch
 
 #
-# install MS VS Code for linux
+# set sshd_config, exporse port 22
 #
-RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
-RUN sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-RUN yum check-update && sudo yum -y install code
-RUN yum clean all
-
-#
-# set sshd_config, exporse port 22 and start sshd daemon
-#
-RUN echo 'root:root' | chpasswd
+RUN mkdir /var/run/sshd
 RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
-RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N '' 
+
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
-
-# ---------------------------------------------------------------------------------
-# user0 add with sudo authority
-# ---------------------------------------------------------------------------------
-RUN useradd -m user0 && passwd -d user0 && \
-  usermod -aG wheel user0 && chsh -s /bin/bash user0
-# change setting for user0 & wheel group
-RUN sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
-RUN sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
-RUN exec $SHELL -l
 
 #  ---------------------------------------------------------------------------------
-# other tools which are recommeded to install as non-root user
+# install user apps
 #  ---------------------------------------------------------------------------------
-#
-# SBT/Chisel3
-#
-# set gcc to 8
-RUN sudo -u user0 sh -c "scl enable devtoolset-8 bash"
-RUN sudo -u user0 sh -c "mkdir -p \${HOME}/work/MyProject"
-RUN sudo -u user0 sh -c "mkdir -p \${HOME}/tmp"
-# install firrtl v1.4.1
-RUN sudo -u user0 sh -c "git clone --depth=1 https://github.com/freechipsproject/firrtl.git -b v1.4.3 \${HOME}/.firrtl"
-RUN sudo -u user0 sh -c "cd \${HOME}/.firrtl && sbt compile"
-RUN sudo -u user0 sh -c "cd \${HOME}/.firrtl && sbt assembly"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo '# adding firrtl path' >> .bashrc"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export FIRRTL_PATH=\${HOME}/.firrtl/utils/bin'  >> .bashrc"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export PATH=\$FIRRTL_PATH:\$PATH' >> .bashrc"
-# install sv2chisel
-RUN sudo -u user0 sh -c "git clone --depth=1 https://github.com/ovh/sv2chisel.git \${HOME}/.sv2chisel"
-RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt compile"
-RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt test"
-RUN sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
-
-#
-# Downlaod ACL v21.05, dependencies and patching ComputeLibrary/SConstruct for cross compile.
-#
-RUN sudo -u user0 sh -c "mkdir -p \${HOME}/acl && cd \${HOME}/acl && git clone --depth=1 https://github.com/ARM-software/ComputeLibrary.git -b v21.05"
-RUN sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/armv8\.2-a\+fp16'/armv8\.2-a\+fp16\+dotprod'/g' -i ./SConstruct"
-RUN sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/aarch64-linux-gnu-/aarch64-none-linux-gnu-/g' -i ./SConstruct"
-
-#
-# Plenv to switch perl version
-# https://github.com/tokuhirom/plenv.git
-#
-RUN sudo -u user0 sh -c "git clone --depth=1 -b 2.3.1 https://github.com/tokuhirom/plenv.git \${HOME}/.plenv"
-RUN sudo -u user0 sh -c "git clone --depth=1 -b 1.32 https://github.com/tokuhirom/Perl-Build.git \${HOME}/.plenv/plugins/perl-build/"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo '# adding plenv path' >> .bash_profile"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo 'export PATH=\${HOME}/.plenv/bin:\$PATH' >> .bash_profile"
-RUN sudo -u user0 sh -c "cd \${HOME} && echo 'eval "$(\${HOME}/.plenv/bin/plenv init -)"' >> .bash_profile"
+ADD ./start.sh /start.sh
+RUN chmod 755 /start.sh
+RUN sed -i 's/\r//' /start.sh
+RUN ./start.sh
 
 #  ---------------------------------------------------------------------------------
 # reset container
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
 RUN cd /home/user0
-CMD /sbin/init
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
+ENTRYPOINT ["/usr/sbin/sshd", "-D"]
