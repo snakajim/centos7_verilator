@@ -1,7 +1,7 @@
 # HOW TO build
 # $> docker build -t ssh-test .
 # HOW TO run
-# $> docker run -itd -p 2222:22 ssh-test:latest
+# $> docker run -itd -p 20022:22 ssh-test:latest
 # HOW TO connect
 # $> ssh -p 2222 user0@localhost
 #
