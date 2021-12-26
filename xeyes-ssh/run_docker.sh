@@ -1,13 +1,33 @@
 #!/bin/bash
-docker build -t xeyes_ssh .
+# DESCRIPTION:
+# sshd_$OS front end script.
+# 
+# See also:
+# https://docs.docker.jp/engine/examples/running_ssh_service.html
+#
 
-docker kill xeyes
+OS=centos7
+#OS=focal
+
+docker kill sshd_$OS
 docker system prune -f 
 
-docker run --rm -it \
-  --net host \
-  -e DISPLAY=unix${DISPLAY} \
-  -v /tmp/.X-unix:/tmp/.X-unix \
-  -v $HOME/.Xauthority:/root/.Xauthority \
-  --name xeyes \
-  xeyes_ssh
+# docker build and run
+if [ $OS = "centos7" ]; then
+  docker build -t sshd_$OS -f Dockerfile.$OS .
+  docker run -d --hostname test_sshd -P --name test_sshd --privileged sshd_$OS  
+else
+  docker build -t sshd_$OS -f Dockerfile .
+  docker run -d --hostname test_sshd -P --name test_sshd sshd_$OS  
+fi
+
+# check which port is assigned to ssh(22) on the host
+export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "s/^.+://""`
+# check Docker container IP address on the host
+#docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  test_sshd
+
+if [ $OS = "centos7" ]; then
+  ssh -p $PORT22 user0@localhost
+else
+  ssh -p $PORT22 user0@localhost
+fi
