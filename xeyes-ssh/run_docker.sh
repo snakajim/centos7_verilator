@@ -22,7 +22,7 @@ else
 fi
 
 # check which port is assigned to ssh(22) on the host
-export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "s/^.+://""`
+export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "1s/^.+://" | head -n 1"`
 # check Docker container IP address on the host
 #docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  test_sshd
 
