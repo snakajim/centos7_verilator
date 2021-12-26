@@ -13,8 +13,8 @@ cd ${HOME}/tmp && unxz llvm-project-${LLVM_VERSION}.src.tar.xz && \
   tar xvf llvm-project-${LLVM_VERSION}.src.tar && \
   cd llvm-project-${LLVM_VERSION}.src && mkdir -p build && cd build && \
   cmake -G Ninja -G "Unix Makefiles" \
-    -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8/usr/bin/gcc" \
-    -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8/usr/bin/g++" \
+    -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/gcc" \
+    -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/g++" \
     -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld" \
     -DCMAKE_BUILD_TYPE=RELEASE \
     -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64"\
