@@ -15,7 +15,7 @@ https://hub.docker.com/repository/docker/nsatoshi/centos7-verilator
 Start docker. 
 
 ```
-$> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda --hostname cs7 --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+$> docker run -d -p 20022:22 --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
 ```
 
 In this example port 20022 in host is used to ssh access, you can modify it as you want.
@@ -28,16 +28,18 @@ $> ssh -p 20022 user0@localhost
 
 ## Trouble shooting
 
-If you have ssh connection issue, please test using test/Dockerfile.
+If you have ssh connection issue, please test using xeyes-ssh/Dockerfile.
 
-## History
+## Tag History
 
-### v21-coming future
+### 22-coming future(wish list)
 
-Using multi-stage builds to reduce container size(TBD).
+- Using multi-stage builds to reduce container size(TBD).
+- Supporting multi-arch
 
-### v21.07
-Adding ssh connection, and some of tool update.
+### 21.12
+Adding ssh connection from host, and some of tool update.
+Adding aarch64-linux-gnu- for aarch64 linux cross compile.
 
 ### v21.01
 Initial version.

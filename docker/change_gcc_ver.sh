@@ -11,7 +11,7 @@ scl enable devtoolset-8 bash
 cd /root && \
   echo "# " >> .bashrc
 cd /root && \
-  echo "# gcc 7.5.0 setting for cmake" >> .bashrc
+  echo "# gcc 8.3.1 setting for cmake" >> .bashrc
 cd /root && \
   echo "export CMAKE_CXX_COMPILER=/opt/rh/devtoolset-8/root/usr/bin/gcc++">> .bashrc
 cd /root && \
@@ -29,7 +29,7 @@ cd /root && \
 cd /etc/skel && \
   echo "# " >> .bashrc
 cd /etc/skel && \
-  echo "# gcc 7.5.0 setting for cmake" >> .bashrc
+  echo "# gcc 8.3.1 setting for cmake" >> .bashrc
 cd /etc/skel && \
   echo "export CMAKE_CXX_COMPILER=/opt/rh/devtoolset-8/root/usr/bin/gcc++" >> .bashrc
 cd /etc/skel && \

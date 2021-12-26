@@ -28,5 +28,5 @@ cd ${HOME}/tmp && \
   ./configure --prefix=/usr \
   CC=/opt/rh/devtoolset-8/root/usr/bin/gcc \
   CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ && \
-  make -j`nproc` && make install
+  make -j`nproc` && sudo make install
 cd ${HOME}/tmp/cmake-3.18.4 && make clean 

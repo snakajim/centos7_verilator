@@ -26,9 +26,9 @@
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
-# $> docker run -it -p 20022:22 -e DISPLAY=$DISPLAY --name eda --hostname cs7 --restart=always -d --net host nsatoshi/centos7-verilator:latest sh
+# $> docker run -d -p 20022:22 --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
 # 3. To access from host via ssh
-# $> ssh -p 20022 user0@localhost
+# $> ssh -p 20022 user0@localhost (as "user0" passwd)
 # or
 # $> ssh -p 20022 root@localhost (as "root" passwd)
 #
@@ -86,26 +86,35 @@ RUN mkdir -p ${HOME}/tmp
 #  ---------------------------------------------------------------------------------
 # Change gcc vertion to newer as root
 #  ---------------------------------------------------------------------------------
-ADD ./change_gcc_ver.sh /change_gcc_ver.sh
-RUN chmod 755 /change_gcc_ver.sh
-RUN sed -i 's/\r//' /change_gcc_ver.sh
-RUN /change_gcc_ver.sh
+RUN mkdir -p /scripts
+ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
+RUN chmod 755 /scripts/change_gcc_ver.sh
+RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
+RUN /scripts/change_gcc_ver.sh
 
 #  ---------------------------------------------------------------------------------
 # Install tools to newer as root
 #  ---------------------------------------------------------------------------------
-ADD ./install_tools.sh /install_tools.sh
-RUN chmod 755 /install_tools.sh
-RUN sed -i 's/\r//' /install_tools.sh
-RUN /install_tools.sh
+ADD ./install_tools.sh /scripts/install_tools.sh
+RUN chmod 755 /scripts/install_tools.sh
+RUN sed -i 's/\r//' /scripts/install_tools.sh
+RUN /scripts/install_tools.sh
 
 #  ---------------------------------------------------------------------------------
 # Install verilator as root
 #  ---------------------------------------------------------------------------------
-ADD ./install_verilator.sh /install_verilator.sh
-RUN chmod 755 /install_verilator.sh
-RUN sed -i 's/\r//' /install_verilator.sh
-RUN /install_verilator.sh
+ADD ./install_verilator.sh /scripts/install_verilator.sh
+RUN chmod 755 /scripts/install_verilator.sh
+RUN sed -i 's/\r//' /scripts/install_verilator.sh
+RUN /scripts/install_verilator.sh
+
+#  ---------------------------------------------------------------------------------
+# Install llvm as root
+#  ---------------------------------------------------------------------------------
+ADD ./install_llvm.sh /scripts/install_llvm.sh
+RUN chmod 755 /scripts/install_llvm.sh
+RUN sed -i 's/\r//' /scripts/install_llvm.sh
+RUN /scripts/install_llvm.sh
 
 #  ---------------------------------------------------------------------------------
 # install sbt(Scalar Build Tool)
@@ -127,10 +136,10 @@ EXPOSE 22
 #  ---------------------------------------------------------------------------------
 # install user apps by start.sh
 #  ---------------------------------------------------------------------------------
-ADD ./start.sh /start.sh
-RUN chmod 755 /start.sh
-RUN sed -i 's/\r//' /start.sh
-RUN /start.sh
+ADD ./start.sh /scripts/start.sh
+RUN chmod 755 /scripts/start.sh
+RUN sed -i 's/\r//' /scripts/start.sh
+RUN /scripts/start.sh
 
 #  ---------------------------------------------------------------------------------
 # reset container
