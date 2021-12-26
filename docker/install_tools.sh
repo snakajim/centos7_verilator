@@ -16,7 +16,7 @@ cd ${HOME}/tmp && \
   ./configure --prefix=/usr \
   CC=/opt/rh/devtoolset-8/root/usr/bin/gcc \
   CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ && \
-  make -j`nproc` && make install
+  make -j`nproc` && sudo make install
 cd ${HOME}/tmp/git-2.33.0 && make clean
 
 #

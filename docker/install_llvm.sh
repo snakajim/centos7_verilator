@@ -13,30 +13,30 @@ cd ${HOME}/tmp && unxz llvm-project-${LLVM_VERSION}.src.tar.xz && \
   tar xvf llvm-project-${LLVM_VERSION}.src.tar && \
   cd llvm-project-${LLVM_VERSION}.src && mkdir -p build && cd build && \
   cmake -G Ninja -G "Unix Makefiles" \
-    -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/gcc" \
-    -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/g++" \
+    -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8${HOME}/usr/bin/gcc" \
+    -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8${HOME}/usr/bin/g++" \
     -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld" \
     -DCMAKE_BUILD_TYPE=RELEASE \
     -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64"\
     -DCMAKE_INSTALL_PREFIX="/usr/local/llvm_1201" \
     ../llvm && make -j`nproc` && \
-    make install
+    sudo make install
 cd ${HOME}/tmp/llvm-project-${LLVM_VERSION}.src/build && make clean
 
-cd /root && \
-  echo "# " >> .bashrc
-cd /root && \
-  echo "# LLVM setting" >> .bashrc
-cd /root && \
-  echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
-cd /root && \
-  echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
+cd ${HOME} && \
+  sudo echo "# " >> .bashrc
+cd ${HOME} && \
+  sudo echo "# LLVM setting" >> .bashrc
+cd ${HOME} && \
+  sudo echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
+cd ${HOME} && \
+  sudo echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
 
 cd /etc/skel && \
-  echo "# " >> .bashrc
+  sudo echo "# " >> .bashrc
 cd /etc/skel && \
-  echo "# LLVM setting" >> .bashrc
+  sudo echo "# LLVM setting" >> .bashrc
 cd /etc/skel && \
-  echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
+  sudo echo "export LLVM_DIR=/usr/local/llvm_1201">> .bashrc
 cd /etc/skel && \
-  echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
+  sudo echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
