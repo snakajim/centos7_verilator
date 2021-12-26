@@ -22,7 +22,7 @@
 # ---------------------------------
 #
 # 1. To build
-# $> docker build -t nsatoshi/centos7-verilator --no-cache=true .
+# $> docker build -t nsatoshi/centos7-verilator -f Dockerfile .
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
@@ -51,13 +51,6 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/usr/sbin/init"]
-#
-# 2020/Nov/08, patch for systemd enable.(httpd)
-# See https://hub.docker.com/_/centos?tab=description, Systemd integration
-#
-RUN yum -y install httpd; yum clean all; systemctl enable httpd.service
-EXPOSE 80
 CMD ["/usr/sbin/init"]
 
 #
@@ -123,13 +116,12 @@ RUN mv ${HOME}/work/sbt-rpm.repo /etc/yum.repos.d/
 RUN yum -y install sbt-1.5.5-0.noarch
 
 #  ---------------------------------------------------------------------------------
-# set sshd_config, exporse port 22
+# Install openssl and set sshd_config, exporse port 22
 #  ---------------------------------------------------------------------------------
-RUN mkdir /var/run/sshd
+RUN yum -y install openssh-server openssh-clients xeyes
 RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
-RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N '' 
-
+RUN systemctl enable sshd.service
+RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
 EXPOSE 22
 
 #  ---------------------------------------------------------------------------------
@@ -146,4 +138,4 @@ RUN /start.sh
 RUN rm -rf /root/tmp/*
 RUN cd /home/user0
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
-ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D"]
