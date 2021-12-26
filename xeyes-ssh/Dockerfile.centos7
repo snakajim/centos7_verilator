@@ -18,7 +18,7 @@
 # https://docs.docker.jp/engine/examples/running_ssh_service.html
 #
 FROM centos:7
-LABEL maintainer="snakajim"
+LABEL maintainer="nsatoshi"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
 
