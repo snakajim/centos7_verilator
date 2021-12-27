@@ -28,6 +28,8 @@ RUN apt-get -y install x11-apps
 RUN mkdir /var/run/sshd
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/\#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 ENV NOTVISIBLE "in users profile"
@@ -40,6 +42,9 @@ RUN useradd -m -b /home -s /bin/bash user0
 RUN echo 'user0:user0' | chpasswd
 RUN sed -i 's/^%sudo\s*ALL=(ALL:ALL) ALL/%sudo ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
 RUN usermod -aG sudo user0
+RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
 #
 # exit
 #

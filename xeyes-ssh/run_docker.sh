@@ -26,8 +26,9 @@ export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "1s/^.+://
 # check Docker container IP address on the host
 #docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  test_sshd
 
-if [ $OS = "centos7" ]; then
-  ssh -p $PORT22 user0@localhost
-else
-  ssh -p $PORT22 user0@localhost
-fi
+ssh-keygen -t rsa -N "" -f ${HOME}/.ssh/id_rsa_localhost_${PORT22}
+scp -P ${PORT22} ${HOME}/.ssh/id_rsa_localhost_${PORT22}.pub \
+  user0@localhost:/home/user0/.ssh/
+ssh -p $PORT22 -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
+  user0@localhost \
+  `cat /home/user0/.ssh/id_rsa_localhost_${PORT22}.pub >> /home/user0/.ssh/authorized_keys`
