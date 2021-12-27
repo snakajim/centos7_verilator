@@ -23,6 +23,7 @@ In this example port 20022 in host is used to ssh access, you can modify it as y
 
 Then ssh connect. user0 password is set to "user0".
 ```
+$> docker port eda 22/tcp
 $> ssh -p 20022 user0@localhost
 ```
 
