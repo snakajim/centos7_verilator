@@ -20,7 +20,7 @@
 FROM ubuntu:20.04
 
 RUN apt-get update && apt-get install -y openssh-server
-RUN apt-get -y install x11-apps
+RUN apt-get -y install x11-apps xserver-xorg
 
 #
 # Install OpenSSH and enable ssh connection to Focal container.
@@ -30,6 +30,8 @@ RUN echo 'root:root' | chpasswd
 RUN sed -i 's/\#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
 RUN sed -i 's/^#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AddressFamily any/AddressFamily any/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AllowTcpForwarding yes/AllowTcpForwarding yes/' /etc/ssh/sshd_config
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 ENV NOTVISIBLE "in users profile"

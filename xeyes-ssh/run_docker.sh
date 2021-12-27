@@ -31,4 +31,7 @@ scp -P ${PORT22} ${HOME}/.ssh/id_rsa_localhost_${PORT22}.pub \
   user0@localhost:/home/user0/.ssh/
 ssh -p $PORT22 -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
   user0@localhost \
-  `cat /home/user0/.ssh/id_rsa_localhost_${PORT22}.pub >> /home/user0/.ssh/authorized_keys`
+  sh -c "cat /home/user0/.ssh/id_rsa_localhost_${PORT22}.pub >> /home/user0/.ssh/authorized_keys"
+ssh -p $PORT22 -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
+  user0@localhost \
+  sh -c "chmod 600 /home/user0/.ssh/*"
