@@ -34,6 +34,8 @@ export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "1s/^.+://
 #
 # Preparing key pair for the test_sshd container
 #
+rm ${HOME}/.ssh/id_rsa_localhost_*
+sed -i '/^\[localhost\]/d' ${HOME}/.ssh/known_hosts
 ssh-keygen -t rsa -N "" -f ${HOME}/.ssh/id_rsa_localhost_${PORT22}
 
 #
@@ -43,7 +45,7 @@ scp -o IdentitiesOnly=yes -P ${PORT22} ${HOME}/.ssh/id_rsa_localhost_${PORT22}.p
   user0@localhost:/home/user0/.ssh/
 ssh -o IdentitiesOnly=yes -p ${PORT22} user0@localhost \
   "cat /home/user0/.ssh/id_rsa_localhost_${PORT22}.pub >> /home/user0/.ssh/authorized_keys"
-ssh -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} user0@localhost \
+ssh -o IdentitiesOnly=yes -p ${PORT22} user0@localhost \
   "chmod 600 /home/user0/.ssh/*"
 
 #

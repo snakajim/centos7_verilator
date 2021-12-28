@@ -129,9 +129,12 @@ RUN yum -y install sbt-1.5.5-0.noarch
 #  ---------------------------------------------------------------------------------
 RUN yum -y install openssh-server openssh-clients xeyes
 RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AllowTcpForwarding yes/AllowTcpForwarding yes/' /etc/ssh/sshd_config
 RUN systemctl enable sshd.service
 RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
-EXPOSE 22
 
 #  ---------------------------------------------------------------------------------
 # install user apps by start.sh
@@ -147,4 +150,5 @@ RUN /scripts/start.sh
 RUN rm -rf /root/tmp/*
 RUN cd /home/user0
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
+EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
