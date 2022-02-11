@@ -135,6 +135,7 @@ RUN sed -i 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
 RUN sed -i 's/^#AllowTcpForwarding yes/AllowTcpForwarding yes/' /etc/ssh/sshd_config
 RUN systemctl enable sshd.service
 RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
+RUN echo 'root:root' | chpasswd
 
 #  ---------------------------------------------------------------------------------
 # install user apps by start.sh
