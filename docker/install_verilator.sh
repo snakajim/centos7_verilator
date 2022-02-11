@@ -14,7 +14,7 @@ else
   CLANG_VERSION="0"
 fi
 
-if [ "$CLANG_VERSION" -gt 130000 ]; then
+if [ "$CLANG_VERSION" -gt 150000 ]; then
   export CC=`which clang`
   export CXX=`which clang++`
   export LD=`which lld`
@@ -43,8 +43,8 @@ cd ${HOME}/tmp && tar -xvf verilator-v4.${VERILATOR_REV}.tgz -C verilator --stri
 start_time=`date +%s`
 cd ${HOME}/tmp/verilator && autoconf && \
   ./configure --prefix=/usr/local/verilator_4_${VERILATOR_REV} \
-  CC='$CC -B${LD}' \
-  CXX='$CXX -B${LD}' && \
+  CC=$CC \
+  CXX=$CXX && \
   make -j`nproc` && \
   sudo make install
 end_time=`date +%s`
