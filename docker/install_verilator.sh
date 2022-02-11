@@ -69,11 +69,11 @@ cd /etc/skel && \
 cd /etc/skel && \
   sudo echo "export PATH=\$VERILATOR_ROOT/bin:\$PATH" >> .bashrc
 
-echo "cat /proc/cpuinfo" > ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-cat /proc/cpuinfo  >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-echo "nproc" >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-nproc >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-echo "tool chain version" >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-$CC --version >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
-echo "install_verilator.sh costs $run_time [sec]." >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+echo "cat /proc/cpuinfo" > ${HOME}/tmp/run_${VERILATOR_REV}.log
+cat /proc/cpuinfo  >> ${HOME}/tmp/run_${VERILATOR_REV}.log
+echo "nproc" >> ${HOME}/tmp/run_${VERILATOR_REV}.log
+nproc >> ${HOME}/tmp/run_${VERILATOR_REV}.log
+echo "tool chain version" >> ${HOME}/tmp/run_${VERILATOR_REV}.log
+$CC --version >> ${HOME}/tmp/run_${VERILATOR_REV}.log
+echo "install_verilator.sh costs $run_time [sec]." >> ${HOME}/tmp/run_${VERILATOR_REV}.log
 echo ""
