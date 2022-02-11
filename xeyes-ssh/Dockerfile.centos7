@@ -72,6 +72,14 @@ RUN usermod -aG wheel user0
 RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
 RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
 RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
+#  ---------------------------------------------------------------------------------
+# COPY supervisord.conf
+#  ---------------------------------------------------------------------------------
+RUN yum -y install openssh-server supervisor
+RUN mkdir -p /var/run/sshd /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN sed -i 's/\r//' /etc/supervisor/conf.d/supervisord.conf
+RUN chmod +x /etc/supervisor/conf.d/supervisord.conf
 #
 # exit
 #
