@@ -26,11 +26,11 @@
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
-# $> docker run -d -p 20022:22 --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
+# $> docker run -d -P --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
 # 3. To access from host via ssh
-# $> ssh -p 20022 user0@localhost (as "user0" passwd)
+# $> ssh -p xxxx user0@localhost (as "user0" passwd)
 # or
-# $> ssh -p 20022 root@localhost (as "root" passwd)
+# $> ssh -p xxxx root@localhost (as "root" passwd)
 #
 FROM centos:7
 LABEL maintainer="nsatoshi"
@@ -101,20 +101,20 @@ RUN sed -i 's/\r//' /scripts/install_tools.sh
 RUN /scripts/install_tools.sh
 
 #  ---------------------------------------------------------------------------------
-# Install verilator as root
-#  ---------------------------------------------------------------------------------
-ADD ./install_verilator.sh /scripts/install_verilator.sh
-RUN chmod 755 /scripts/install_verilator.sh
-RUN sed -i 's/\r//' /scripts/install_verilator.sh
-RUN /scripts/install_verilator.sh
-
-#  ---------------------------------------------------------------------------------
 # Install llvm as root
 #  ---------------------------------------------------------------------------------
 ADD ./install_llvm.sh /scripts/install_llvm.sh
 RUN chmod 755 /scripts/install_llvm.sh
 RUN sed -i 's/\r//' /scripts/install_llvm.sh
 RUN /scripts/install_llvm.sh
+
+#  ---------------------------------------------------------------------------------
+# Install verilator as root
+#  ---------------------------------------------------------------------------------
+ADD ./install_verilator.sh /scripts/install_verilator.sh
+RUN chmod 755 /scripts/install_verilator.sh
+RUN sed -i 's/\r//' /scripts/install_verilator.sh
+RUN /scripts/install_verilator.sh
 
 #  ---------------------------------------------------------------------------------
 # install sbt(Scalar Build Tool)
@@ -145,10 +145,19 @@ RUN sed -i 's/\r//' /scripts/start.sh
 RUN /scripts/start.sh
 
 #  ---------------------------------------------------------------------------------
+# COPY supervisord.conf
+#  ---------------------------------------------------------------------------------
+RUN yum -y install openssh-server supervisor
+RUN mkdir -p /var/run/sshd /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN sed -i 's/\r//' /etc/supervisor/conf.d/supervisord.conf
+RUN chmod +x /etc/supervisor/conf.d/supervisord.conf
+
+#  ---------------------------------------------------------------------------------
 # reset container
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
 RUN cd /home/user0
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/bin/supervisord"]
