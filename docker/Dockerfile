@@ -24,9 +24,9 @@
 # 1. To build
 # $> docker build -t nsatoshi/centos7-verilator -f Dockerfile . --no-cache
 # 1-1. or To pull from public repo
-# $> docker pull nsatoshi/centos7-verilator:latest
+# $> docker pull nsatoshi/centos7-verilator
 # 2. To run
-# $> docker run -d -P --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
+# $> docker run -d -P --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator
 # 3. To access from host via ssh
 # $> ssh -p xxxx user0@localhost (as "user0" passwd)
 # or

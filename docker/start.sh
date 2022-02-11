@@ -45,23 +45,6 @@ sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt test"
 sudo -u user0 sh -c "cd \${HOME}/.sv2chisel && sbt publishLocal"
 
 #
-# Downlaod ACL v21.05, dependencies and patching ComputeLibrary/SConstruct for cross compile.
-#
-sudo -u user0 sh -c "mkdir -p \${HOME}/acl && cd \${HOME}/acl && git clone --depth=1 https://github.com/ARM-software/ComputeLibrary.git -b v21.05"
-sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/armv8\.2-a\+fp16'/armv8\.2-a\+fp16\+dotprod'/g' -i ./SConstruct"
-sudo -u user0 sh -c "cd \${HOME}/acl/ComputeLibrary && perl -pe 's/aarch64-linux-gnu-/aarch64-none-linux-gnu-/g' -i ./SConstruct"
-
-#
-# Plenv to switch perl version
-# https://github.com/tokuhirom/plenv.git
-#
-sudo -u user0 sh -c "git clone --depth=1 -b 2.3.1 https://github.com/tokuhirom/plenv.git \${HOME}/.plenv"
-sudo -u user0 sh -c "git clone --depth=1 -b 1.32 https://github.com/tokuhirom/Perl-Build.git \${HOME}/.plenv/plugins/perl-build/"
-sudo -u user0 sh -c "cd \${HOME} && echo '# adding plenv path' >> .bash_profile"
-sudo -u user0 sh -c "cd \${HOME} && echo 'export PATH=\${HOME}/.plenv/bin:\$PATH' >> .bash_profile"
-sudo -u user0 sh -c "cd \${HOME} && echo 'eval "$(\${HOME}/.plenv/bin/plenv init -)"' >> .bash_profile"
-
-#
 # install MS VS Code for linux
 #
 rpm --import https://packages.microsoft.com/keys/microsoft.asc
