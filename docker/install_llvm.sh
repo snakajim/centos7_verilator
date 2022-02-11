@@ -5,7 +5,7 @@
 #
 # used for CENTOS7 only
 #
-LLVM_VERSION="12.0.1"
+LLVM_VERSION="13.0.1"
 
 mkdir -p ${HOME}/tmp && rm -rf ${HOME}/tmp/llvm-project* 
 cd ${HOME}/tmp && aria2c -x10 https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_VERSION}/llvm-project-${LLVM_VERSION}.src.tar.xz
@@ -41,3 +41,5 @@ cd /etc/skel && \
   sudo echo "export LLVM_DIR=/usr/local/llvm_${LLVM_VERSION}">> .bashrc
 cd /etc/skel && \
   sudo echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
+
+source ~/.bashrc && sudo ldconfig -v

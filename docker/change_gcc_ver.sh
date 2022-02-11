@@ -44,31 +44,3 @@ cd /etc/skel && \
 cd /etc/skel && \
   echo "export CC=/opt/rh/devtoolset-8/root/usr/bin/gcc" >> .bashrc
 
-#
-# Install aarch64-linux gnu Version ${AARCH64_LINUX_VERSION} 
-#
-#https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz
-AARCH64_LINUX_VERSION="10.3-2021.07"
-cd ${HOME}/tmp && \
-  aria2c -x10 https://developer.arm.com/-/media/Files/downloads/gnu-a/${AARCH64_LINUX_VERSION}/binrel/gcc-arm-${AARCH64_LINUX_VERSION}-x86_64-aarch64-none-linux-gnu.tar.xz && \
-  unxz gcc-arm-${AARCH64_LINUX_VERSION}-x86_64-aarch64-none-linux-gnu.tar.xz && \
-  tar xvf gcc-arm-${AARCH64_LINUX_VERSION}-x86_64-aarch64-none-linux-gnu.tar -C /usr/local
-cd /root && \
-  echo "# " >> .bashrc
-cd /root && \
-  echo "# aarch64-linux-gnu- setting" >> .bashrc
-cd /root && \
-  echo "export AARCH64_LINUX_GNU_DIR=/usr/local/gcc-arm-${AARCH64_LINUX_VERSION}-x86_64-aarch64-none-linux-gnu">> .bashrc
-cd /root && \
-  echo "export PATH=\$AARCH64_LINUX_GNU_DIR/bin:\$PATH" >> .bashrc
-
-cd /etc/skel && \
-  echo "# " >> .bashrc
-cd /etc/skel && \
-  echo "# aarch64-linux-gnu- setting" >> .bashrc
-cd /etc/skel && \
-  echo "export AARCH64_LINUX_GNU_DIR=/usr/local/gcc-arm-${AARCH64_LINUX_VERSION}-x86_64-aarch64-none-linux-gnu">> .bashrc
-cd /etc/skel && \
-  echo "export PATH=\$AARCH64_LINUX_GNU_DIR/bin:\$PATH" >> .bashrc
-# In clang command option, please add
-# --target=aarch64-linux-gnu -I/usr/include/c++/4.8.2/x86_64-redhat-linux -I/usr/include/c++/4.8.2/x86_64-redhat-linux/bits

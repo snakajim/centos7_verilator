@@ -22,7 +22,7 @@
 # ---------------------------------
 #
 # 1. To build
-# $> docker build -t nsatoshi/centos7-verilator -f Dockerfile .
+# $> docker build -t nsatoshi/centos7-verilator -f Dockerfile . --no-cache
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator:latest
 # 2. To run
