@@ -19,6 +19,7 @@ if [ "$CLANG_VERSION" -gt 150000 ]; then
   export CXX=`which clang++`
   export CMAKE_CXX_COMPILER=`which clang++`
   export CMAKE_C_COMPILER=`which clang`
+  export CMAKE_LINKER=`which lld`
   echo "Set tool chain LLVM"
 else
   export CC=/opt/rh/devtoolset-8/root/usr/bin/gcc
@@ -66,11 +67,11 @@ cd /etc/skel && \
 cd /etc/skel && \
   sudo echo "export PATH=\$VERILATOR_ROOT/bin:\$PATH" >> .bashrc
 
-echo "cat /proc/cpuinfo" > ${HOME}/tmp/run.log
-cat /proc/cpuinfo  >> ${HOME}/tmp/run.log
-echo "nproc" >> ${HOME}/tmp/run.log
-nproc >> ${HOME}/tmp/run.log
-echo "tool chain version" >> ${HOME}/tmp/run.log
-$CC --version >> ${HOME}/tmp/run.log
-echo "install_verilator.sh costs $run_time [sec]." >> ${HOME}/tmp/run.log
+echo "cat /proc/cpuinfo" > ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+cat /proc/cpuinfo  >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+echo "nproc" >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+nproc >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+echo "tool chain version" >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+$CC --version >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
+echo "install_verilator.sh costs $run_time [sec]." >> ${HOME}/tmp/run_${CC}_${VERILATOR_REV}.log
 echo ""
