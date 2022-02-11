@@ -17,6 +17,7 @@ fi
 if [ "$CLANG_VERSION" -gt 150000 ]; then
   export CC=`which clang`
   export CXX=`which clang++`
+  export LD=`which lld`
   export CMAKE_CXX_COMPILER=`which clang++`
   export CMAKE_C_COMPILER=`which clang`
   export CMAKE_LINKER=`which lld`
@@ -26,6 +27,7 @@ else
   export CXX=/opt/rh/devtoolset-8/root/usr/bin/g++
   export CMAKE_CXX_COMPILER=/opt/rh/devtoolset-8/root/usr/bin/gcc++
   export CMAKE_C_COMPILER=/opt/rh/devtoolset-8/root/usr/bin/gcc
+  export LD=/opt/rh/devtoolset-8/root/usr/bin/ld
   echo "Set tool chain gcc"
 fi
 
@@ -40,8 +42,8 @@ cd ${HOME}/tmp && tar -xvf verilator-v4.${VERILATOR_REV}.tgz -C verilator --stri
 start_time=`date +%s`
 cd ${HOME}/tmp/verilator && autoconf && \
   ./configure --prefix=/usr/local/verilator_4_${VERILATOR_REV} \
-  CC=$CC \
-  CXX=$CXX && \
+  CC='$CC -B${LD}' \
+  CXX='$CXX -B${LD}' && \
   make -j`nproc` && \
   sudo make install
 end_time=`date +%s`
