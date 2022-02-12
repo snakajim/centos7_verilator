@@ -28,7 +28,7 @@
 # 2. To run
 # $> docker run -d -P --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator
 # 3. To access from host via ssh
-# $> ssh -p xxxx user0@localhost (as "user0" passwd)
+# $> ssh -p xxxx ${UBLUSER}@localhost (as "${UBLUSER}" passwd)
 # or
 # $> ssh -p xxxx root@localhost (as "root" passwd)
 #
@@ -36,6 +36,8 @@ FROM centos:7
 LABEL maintainer="nsatoshi"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
+ARG UBLUSER="user0"
+
 #
 # 2020/Nov/08, patch for systemd D-Bus known bug in CENTOS7.
 # See https://hub.docker.com/_/centos?tab=description, Systemd integration
@@ -106,7 +108,7 @@ RUN /scripts/install_tools.sh
 ADD ./install_llvm.sh /scripts/install_llvm.sh
 RUN chmod 755 /scripts/install_llvm.sh
 RUN sed -i 's/\r//' /scripts/install_llvm.sh
-RUN /scripts/install_llvm.sh
+#RUN /scripts/install_llvm.sh
 
 #  ---------------------------------------------------------------------------------
 # Install verilator as root
@@ -138,15 +140,15 @@ RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
 RUN echo 'root:root' | chpasswd
 
 #  ---------------------------------------------------------------------------------
-# add user0 as wheel group
+# add ${UBLUSER} as wheel group
 #  ---------------------------------------------------------------------------------
-RUN useradd -m -b /home -s /bin/bash user0
-RUN echo 'user0:user0' | chpasswd
+RUN useradd -m -b /home -s /bin/bash ${UBLUSER}
+RUN echo ${UBLUSER}:${UBLUSER} | chpasswd
 RUN sed -i 's/^# %wheel\s*ALL=(ALL)\s*NOPASSWD: ALL/ %wheel        ALL=(ALL)       NOPASSWD: ALL/' /etc/sudoers
-RUN usermod -aG wheel user0
-RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
-RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
-RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
+RUN usermod -aG wheel ${UBLUSER}
+RUN sudo -u ${UBLUSER} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u ${UBLUSER} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
 #  ---------------------------------------------------------------------------------
 # install user apps by start.sh
 #  ---------------------------------------------------------------------------------
@@ -168,7 +170,7 @@ RUN chmod +x /etc/supervisor/conf.d/supervisord.conf
 # reset container
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
-RUN cd /home/user0
+RUN cd /home/${UBLUSER}
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
 EXPOSE 22
 CMD ["/usr/bin/supervisord"]
