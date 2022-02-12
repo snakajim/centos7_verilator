@@ -8,16 +8,17 @@
 
 OS=centos7
 #OS=focal
+UBLUSER="user0"
 
 docker kill test_sshd
 docker system prune -f 
 
 # docker build and run
 if [ $OS = "centos7" ]; then
-  docker build -t sshd_$OS -f Dockerfile.$OS .
+  docker build -t sshd_$OS --build-arg UBLUSER=${UBLUSER} -f Dockerfile.$OS .
   docker run -d --hostname test_sshd -P --name test_sshd --privileged sshd_$OS  
 else
-  docker build -t sshd_$OS -f Dockerfile .
+  docker build -t sshd_$OS --build-arg UBLUSER=${UBLUSER} -f Dockerfile .
   docker run -d --hostname test_sshd -P --name test_sshd sshd_$OS  
 fi
 
@@ -43,11 +44,11 @@ ssh-keygen -t rsa -N "" -f ${HOME}/.ssh/id_rsa_localhost_${PORT22}
 #
 echo "Please enter password."
 ssh-copy-id -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
-  user0@localhost
+  ${UBLUSER}@localhost
 
 #
 # Now you should have ssh connection without password
 #
 ssh -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
-  user0@localhost echo "If you can see this msg, ssh login done without passwd. Congras!"
+  ${UBLUSER}@localhost echo "If you can see this msg, ssh login done without passwd. Congras!"
 

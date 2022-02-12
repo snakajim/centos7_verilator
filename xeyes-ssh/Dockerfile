@@ -10,7 +10,7 @@
 # $> docker port test_sshd 22/tcp
 # $> $ ssh root@localhost -p <port shown above>
 # or
-# $> $ ssh user0@localhost -p <port shown above>
+# $> $ ssh ${UBLUSER}@localhost -p <port shown above>
 # To fix port:
 # Use "-p <your binded port>:22" option instead of "-P"
 #
@@ -18,6 +18,7 @@
 # https://docs.docker.jp/engine/examples/running_ssh_service.html
 #
 FROM ubuntu:20.04
+ARG UBLUSER="user0"
 
 RUN apt-get update && apt-get install -y openssh-server
 RUN apt-get -y install x11-apps xserver-xorg
@@ -37,16 +38,16 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 #
-# add user0 as sudo group
+# add ${UBLUSER} as sudo group
 #
 RUN apt-get -y install nano sudo
-RUN useradd -m -b /home -s /bin/bash user0
-RUN echo 'user0:user0' | chpasswd
+RUN useradd -m -b /home -s /bin/bash ${UBLUSER}
+RUN echo ${UBLUSER}:${UBLUSER} | chpasswd
 RUN sed -i 's/^%sudo\s*ALL=(ALL:ALL) ALL/%sudo ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
-RUN usermod -aG sudo user0
-RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
-RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
-RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
+RUN usermod -aG sudo ${UBLUSER}
+RUN sudo -u ${UBLUSER} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u ${UBLUSER} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
 #
 # exit
 #

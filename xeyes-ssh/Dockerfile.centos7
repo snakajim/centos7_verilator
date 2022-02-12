@@ -10,7 +10,7 @@
 # $> docker port test_sshd 22/tcp
 # $> $ ssh root@localhost -p <port shown above>
 # or
-# $> $ ssh user0@localhost -p <port shown above>
+# $> $ ssh ${UBLUSER}@localhost -p <port shown above>
 # To fix port:
 # Use "-p <your binded port>:22" option instead of "-P"
 #
@@ -21,6 +21,7 @@ FROM centos:7
 LABEL maintainer="nsatoshi"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
+ARG UBLUSER="user0"
 
 #
 # 2020/Nov/08, patch for systemd D-Bus known bug in CENTOS7.
@@ -62,16 +63,16 @@ RUN systemctl enable sshd.service
 RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
 RUN echo 'root:root' | chpasswd
 #
-# add user0 as wheel group
+# add ${UBLUSER} as wheel group
 #
 RUN yum -y install nano sudo
-RUN useradd -m -b /home -s /bin/bash user0
-RUN echo 'user0:user0' | chpasswd
+RUN useradd -m -b /home -s /bin/bash ${UBLUSER}
+RUN echo ${UBLUSER}:${UBLUSER} | chpasswd
 RUN sed -i 's/^# %wheel\s*ALL=(ALL)\s*NOPASSWD: ALL/ %wheel        ALL=(ALL)       NOPASSWD: ALL/' /etc/sudoers
-RUN usermod -aG wheel user0
-RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
-RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
-RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
+RUN usermod -aG wheel ${UBLUSER}
+RUN sudo -u ${UBLUSER} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u ${UBLUSER} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
 #  ---------------------------------------------------------------------------------
 # COPY supervisord.conf
 #  ---------------------------------------------------------------------------------
