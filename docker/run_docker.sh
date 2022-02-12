@@ -5,12 +5,12 @@
 # See also:
 # https://docs.docker.jp/engine/examples/running_ssh_service.html
 #
-
+UBLUSER="user0"
 
 docker kill cs7_verilator
 docker system prune -f
 
-docker build -t nsatoshi/centos7-verilator -f Dockerfile . --no-cache
+docker build -t nsatoshi/centos7-verilator --build-arg UBLUSER=${UBLUSER} -f Dockerfile . --no-cache
 docker run -d -P --name cs7_verilator --hostname cs7 --restart=always nsatoshi/centos7-verilator
 
 #
@@ -35,11 +35,11 @@ ssh-keygen -t rsa -N "" -f ${HOME}/.ssh/id_rsa_localhost_${PORT22}
 #
 echo "Please enter password."
 ssh-copy-id -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
-  user0@localhost
+  ${UBLUSER}@localhost
 
 #
 # Now you should have ssh connection without password
 #
 ssh -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
-  user0@localhost echo "If you can see this msg, ssh login done without passwd. Congras!"
+  ${UBLUSER}@localhost echo "If you can see this msg, ssh login done without passwd. Congras!"
 
