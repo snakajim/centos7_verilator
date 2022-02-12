@@ -8,9 +8,9 @@
 
 
 docker kill cs7_verilator
-docker system prune -f 
+docker system prune -f
 
-docker build -t nsatoshi/centos7-verilator -f Dockerfile.$OS . --no-cache
+docker build -t nsatoshi/centos7-verilator -f Dockerfile . --no-cache
 docker run -d -P --name cs7_verilator --hostname cs7 --restart=always nsatoshi/centos7-verilator
 
 #
