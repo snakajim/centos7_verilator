@@ -71,7 +71,7 @@ RUN echo "now building...."
 RUN echo "include_only=.jp" >> /etc/yum/pluginconf.d/fastestmirror.conf
 RUN yum clean all
 RUN yum -y install kernel-devel kernel-headers
-RUN yum -y install cmake git wget.x86_64 tar motif xterm emacs nano 
+RUN yum -y install cmake git wget.x86_64 tar motif xterm emacs nano curl
 RUN yum -y install xz rclone tkcvs graphviz xxd gtkwave time
 RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
@@ -92,15 +92,12 @@ RUN mkdir -p /scripts
 ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
 RUN chmod 755 /scripts/change_gcc_ver.sh
 RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
-RUN /scripts/change_gcc_ver.sh
-
-#  ---------------------------------------------------------------------------------
-# Install tools to newer as root
-#  ---------------------------------------------------------------------------------
-ADD ./install_tools.sh /scripts/install_tools.sh
-RUN chmod 755 /scripts/install_tools.sh
-RUN sed -i 's/\r//' /scripts/install_tools.sh
-RUN /scripts/install_tools.sh
+#RUN /scripts/change_gcc_ver.sh
+RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_gcc_cmake_git_as_default.sh \
+  > /scripts/install_gcc_cmake_git_as_default.sh
+RUN chmod +x /scripts/install_gcc_cmake_git_as_default.sh
+RUN sed -i 's/\r//' /scripts/install_gcc_cmake_git_as_default.sh
+RUN /scripts/install_gcc_cmake_git_as_default.sh
 
 #  ---------------------------------------------------------------------------------
 # Install llvm as root

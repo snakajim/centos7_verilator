@@ -13,8 +13,8 @@ cd ${HOME}/tmp && unxz llvm-project-${LLVM_VERSION}.src.tar.xz && \
   tar xvf llvm-project-${LLVM_VERSION}.src.tar && \
   cd llvm-project-${LLVM_VERSION}.src && mkdir -p build && cd build && \
   cmake -G Ninja -G "Unix Makefiles" \
-    -DCMAKE_C_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/gcc" \
-    -DCMAKE_CXX_COMPILER="/opt/rh/devtoolset-8/root/usr/bin/g++" \
+    -DCMAKE_C_COMPILER=`which gcc` \
+    -DCMAKE_CXX_COMPILER=`which g++` \
     -DLLVM_ENABLE_PROJECTS="clang;compiler-rt;lld" \
     -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" \
     -DCMAKE_BUILD_TYPE=RELEASE \

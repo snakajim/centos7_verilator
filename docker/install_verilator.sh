@@ -23,12 +23,12 @@ if [ "$CLANG_VERSION" -gt 150000 ]; then
   export CMAKE_LINKER=`which lld`
   echo "Set tool chain LLVM"
 else
-  export CC='/opt/rh/devtoolset-8/root/usr/bin/gcc'
-  export CXX='/opt/rh/devtoolset-8/root/usr/bin/g++'
-  export LD='/opt/rh/devtoolset-8/root/usr/bin/ld.gold'
-  export CMAKE_CXX_COMPILER='/opt/rh/devtoolset-8/root/usr/bin/gcc++'
-  export CMAKE_C_COMPILER='/opt/rh/devtoolset-8/root/usr/bin/gcc'
-  export CMAKE_LINKER='/opt/rh/devtoolset-8/root/usr/bin/ld.gold'
+  export CC='which gcc'
+  export CXX='which g++'
+  export LD='which ld.gold'
+  export CMAKE_CXX_COMPILER='which gcc++'
+  export CMAKE_C_COMPILER='which gcc'
+  export CMAKE_LINKER='which ld.gold'
   echo "Set tool chain gcc"
 fi
 
