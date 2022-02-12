@@ -22,7 +22,7 @@
 # ---------------------------------
 #
 # 1. To build
-# $> docker build -t nsatoshi/centos7-verilator -f Dockerfile . --no-cache
+# $> docker build -t nsatoshi/centos7-verilator --build-arg UBLUSER="user0" -f Dockerfile . --no-cache
 # 1-1. or To pull from public repo
 # $> docker pull nsatoshi/centos7-verilator
 # 2. To run
@@ -150,12 +150,12 @@ RUN sudo -u ${UBLUSER} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test'
 RUN sudo -u ${UBLUSER} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
 RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
 #  ---------------------------------------------------------------------------------
-# install user apps by start.sh
+# install user apps by install_userapps.sh
 #  ---------------------------------------------------------------------------------
-ADD ./start.sh /scripts/start.sh
-RUN chmod 755 /scripts/start.sh
-RUN sed -i 's/\r//' /scripts/start.sh
-RUN /scripts/start.sh
+ADD ./install_userapps.sh /scripts/install_userapps.sh
+RUN chmod 755 /scripts/install_userapps.sh
+RUN sed -i 's/\r//' /scripts/install_userapps.sh
+RUN /scripts/install_userapps.sh
 
 #  ---------------------------------------------------------------------------------
 # COPY supervisord.conf
