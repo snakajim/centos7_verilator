@@ -90,7 +90,7 @@ RUN mkdir -p ${HOME}/tmp
 #  ---------------------------------------------------------------------------------
 RUN mkdir -p /scripts
 ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
-RUN chmod 755 /scripts/change_gcc_ver.sh
+RUN chmod +x /scripts/change_gcc_ver.sh
 RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
 #RUN /scripts/change_gcc_ver.sh
 RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_gcc_cmake_git_as_default.sh \
@@ -103,7 +103,7 @@ RUN /scripts/install_gcc_cmake_git_as_default.sh
 # Install llvm as root
 #  ---------------------------------------------------------------------------------
 ADD ./install_llvm.sh /scripts/install_llvm.sh
-RUN chmod 755 /scripts/install_llvm.sh
+RUN chmod +x /scripts/install_llvm.sh
 RUN sed -i 's/\r//' /scripts/install_llvm.sh
 #RUN /scripts/install_llvm.sh
 
@@ -111,7 +111,7 @@ RUN sed -i 's/\r//' /scripts/install_llvm.sh
 # Install verilator as root
 #  ---------------------------------------------------------------------------------
 ADD ./install_verilator.sh /scripts/install_verilator.sh
-RUN chmod 755 /scripts/install_verilator.sh
+RUN chmod +x /scripts/install_verilator.sh
 RUN sed -i 's/\r//' /scripts/install_verilator.sh
 RUN /scripts/install_verilator.sh
 
