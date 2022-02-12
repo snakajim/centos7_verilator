@@ -159,12 +159,13 @@ RUN /scripts/start.sh
 
 #  ---------------------------------------------------------------------------------
 # COPY supervisord.conf
+# In CentOS7, dislike Ubuntu, store config in /etc/supervisord.conf.
 #  ---------------------------------------------------------------------------------
 RUN yum -y install openssh-server supervisor
 RUN mkdir -p /var/run/sshd /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-RUN sed -i 's/\r//' /etc/supervisor/conf.d/supervisord.conf
-RUN chmod +x /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisord.conf
+RUN sed -i 's/\r//' /etc/supervisord.conf
+RUN chmod +x /etc/supervisord.conf
 
 #  ---------------------------------------------------------------------------------
 # reset container
