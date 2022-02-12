@@ -75,7 +75,7 @@ RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
 RUN yum -y install python3 python3-devel python3-pip scons
 RUN yum -y install openssh-server openssh-clients
-RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync sudo
+RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync nano sudo
 RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
@@ -137,6 +137,16 @@ RUN systemctl enable sshd.service
 RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
 RUN echo 'root:root' | chpasswd
 
+#  ---------------------------------------------------------------------------------
+# add user0 as wheel group
+#  ---------------------------------------------------------------------------------
+RUN useradd -m -b /home -s /bin/bash user0
+RUN echo 'user0:user0' | chpasswd
+RUN sed -i 's/^# %wheel\s*ALL=(ALL)\s*NOPASSWD: ALL/ %wheel        ALL=(ALL)       NOPASSWD: ALL/' /etc/sudoers
+RUN usermod -aG wheel user0
+RUN sudo -u user0 sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u user0 sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u user0 sh -c 'chmod 600 ~/.ssh/*'
 #  ---------------------------------------------------------------------------------
 # install user apps by start.sh
 #  ---------------------------------------------------------------------------------

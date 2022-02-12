@@ -16,15 +16,15 @@ docker run -d -P --name cs7_verilator --hostname cs7 --restart=always nsatoshi/c
 #
 # check which port is assigned to ssh(22) on the host
 #
-export PORT22=`sh -c "docker container port test_sshd 22/tcp | sed -E "1s/^.+://" | head -n 1"`
+export PORT22=`sh -c "docker container port cs7_verilator 22/tcp | sed -E "1s/^.+://" | head -n 1"`
 
 #
 # check Docker container IP address on the host
 #
-#docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  test_sshd
+#docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  cs7_verilator
 
 #
-# Preparing key pair for the test_sshd container
+# Preparing key pair for the cs7_verilator container
 #
 rm ${HOME}/.ssh/id_rsa_localhost_*
 sed -i '/^\[localhost\]/d' ${HOME}/.ssh/known_hosts

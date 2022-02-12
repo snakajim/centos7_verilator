@@ -1,25 +1,9 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------------------------
-# user0 add with sudo authority
+# Set user ID to be used for
 # ---------------------------------------------------------------------------------
 UBLUSER=user0
-useradd -m ${UBLUSER}
-usermod -aG wheel ${UBLUSER}
-chsh -s /bin/bash ${UBLUSER}
-echo ${UBLUSER}:${UBLUSER} | chpasswd
-# change setting for ${UBLUSER} & wheel group
-sed -i -E 's/\#auth\s+required\s+pam_wheel\.so\s+use_uid/auth      required      pam_wheel\.so      use_uid/' /etc/pam.d/su
-sed -i -E "s/# %wheel\s+ALL=\(ALL\)\s+NOPASSWD:\s+ALL/%wheel        ALL=(ALL)       NOPASSWD: ALL /" /etc/sudoers
-
-# ---------------------------------------------------------------------------------
-# ${UBLUSER} ssh key pair setting
-# ---------------------------------------------------------------------------------
-sudo -u ${UBLUSER} sh -c "mkdir -p \${HOME}/.ssh"
-sudo -u ${UBLUSER} sh -c "touch \${HOME}/.ssh/authorized_keys"
-sudo -u ${UBLUSER} sh -c "ssh-keygen -t rsa -f \${HOME}/.ssh/id_rsa_docker_${UBLUSER} -N '' "
-sudo -u ${UBLUSER} sh -c "cat \${HOME}/.ssh/id_rsa_docker_${UBLUSER}.pub >> \${HOME}/.ssh/authorized_keys" 
-sudo -u ${UBLUSER} sh -c "chmod 600 \${HOME}/.ssh/authorized_keys"
 
 #  ---------------------------------------------------------------------------------
 # other tools which are recommeded to install as non-root user
