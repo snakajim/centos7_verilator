@@ -25,13 +25,13 @@ cd ${HOME}/tmp && unxz llvm-project-${LLVM_VERSION}.src.tar.xz && \
 cd ${HOME}/tmp/llvm-project-${LLVM_VERSION}.src/build && make clean
 
 cd ${HOME} && \
-  sudo echo "# " >> .bashrc
+  echo "# " >> .bashrc
 cd ${HOME} && \
-  sudo echo "# LLVM setting" >> .bashrc
+  echo "# LLVM setting" >> .bashrc
 cd ${HOME} && \
-  sudo echo "export LLVM_DIR=/usr/local/llvm_${LLVM_VERSION}">> .bashrc
+  echo "export LLVM_DIR=/usr/local/llvm_${LLVM_VERSION}">> .bashrc
 cd ${HOME} && \
-  sudo echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
+  echo "export PATH=\$LLVM_DIR/bin:\$PATH" >> .bashrc
 
 cd /etc/skel && \
   sudo echo "# " >> .bashrc
