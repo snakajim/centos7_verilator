@@ -102,15 +102,18 @@ RUN /scripts/install_gcc_cmake_git_as_default.sh
 #  ---------------------------------------------------------------------------------
 # Install llvm as root
 #  ---------------------------------------------------------------------------------
-ADD ./install_llvm.sh /scripts/install_llvm.sh
+RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_llvm.sh \
+  > /scripts/install_llvm.sh
 RUN chmod +x /scripts/install_llvm.sh
 RUN sed -i 's/\r//' /scripts/install_llvm.sh
-#RUN /scripts/install_llvm.sh
+RUN /scripts/install_llvm.sh
 
 #  ---------------------------------------------------------------------------------
 # Install verilator as root
 #  ---------------------------------------------------------------------------------
-ADD ./install_verilator.sh /scripts/install_verilator.sh
+#ADD ./install_verilator.sh /scripts/install_verilator.sh
+RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_verilator.sh \
+ > /scripts/install_verilator.sh
 RUN chmod +x /scripts/install_verilator.sh
 RUN sed -i 's/\r//' /scripts/install_verilator.sh
 RUN /scripts/install_verilator.sh
@@ -152,7 +155,7 @@ RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
 ADD ./install_userapps.sh /scripts/install_userapps.sh
 RUN chmod 755 /scripts/install_userapps.sh
 RUN sed -i 's/\r//' /scripts/install_userapps.sh
-RUN /scripts/install_userapps.sh
+#RUN /scripts/install_userapps.sh
 
 #  ---------------------------------------------------------------------------------
 # COPY supervisord.conf
