@@ -39,14 +39,11 @@ sed -i '/^\[localhost\]/d' ${HOME}/.ssh/known_hosts
 ssh-keygen -t rsa -N "" -f ${HOME}/.ssh/id_rsa_localhost_${PORT22}
 
 #
-# Sending and setting public key to the test_sshd container under /home/user0/.ssh
+# Sending and setting public key to container under ${HOME}/.ssh
 #
-scp -o IdentitiesOnly=yes -P ${PORT22} ${HOME}/.ssh/id_rsa_localhost_${PORT22}.pub \
-  user0@localhost:/home/user0/.ssh/
-ssh -o IdentitiesOnly=yes -p ${PORT22} user0@localhost \
-  "cat /home/user0/.ssh/id_rsa_localhost_${PORT22}.pub >> /home/user0/.ssh/authorized_keys"
-ssh -o IdentitiesOnly=yes -p ${PORT22} user0@localhost \
-  "chmod 600 /home/user0/.ssh/*"
+echo "Please enter password."
+ssh-copy-id -o IdentitiesOnly=yes -p ${PORT22} -i ${HOME}/.ssh/id_rsa_localhost_${PORT22} \
+  user0@localhost
 
 #
 # Now you should have ssh connection without password
