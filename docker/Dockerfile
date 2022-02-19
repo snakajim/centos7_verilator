@@ -172,6 +172,7 @@ RUN chmod +x /etc/supervisord.conf
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
 RUN cd /home/${UBLUSER}
+RUN yum autoremove -y && yum clean all -y
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
 EXPOSE 22
 CMD ["/usr/bin/supervisord"]
