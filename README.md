@@ -38,6 +38,10 @@ If you have ssh connection issue, please test using xeyes-ssh/Dockerfile.
 - Using multi-stage builds to reduce container size(TBD).
 - Supporting multi-arch
 
+### 22.02
+- Adding supervisord to enable multi service.
+- Gcc-9.4/LLVM-13.0.1/binutils-2.34/gdb-9.2/git-2.33.1/cmake-3.18.6 as default tool(under /usr/bin).
+
 ### 21.12
 Adding ssh connection from host, and some of tool update.
 Adding aarch64-linux-gnu- for aarch64 linux cross compile.

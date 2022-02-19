@@ -4,6 +4,12 @@
 # Set user ID to be used for
 # ---------------------------------------------------------------------------------
 UBLUSER=user0
+getent passwd | grep -q ${UBLUSER}
+ret=$?
+if [ $ret == "1" ]; then
+  echo "User ID ${UBLUSER} is not found. Program exit."
+  exit
+fi
 
 #  ---------------------------------------------------------------------------------
 # other tools which are recommeded to install as non-root user
@@ -11,10 +17,6 @@ UBLUSER=user0
 #
 # SBT/Chisel3
 #
-# set gcc to 8
-sudo -u ${UBLUSER} sh -c "scl enable devtoolset-8 bash"
-sudo -u ${UBLUSER} sh -c "mkdir -p \${HOME}/work/MyProject"
-sudo -u ${UBLUSER} sh -c "mkdir -p \${HOME}/tmp"
 # install firrtl v1.4.1
 sudo -u ${UBLUSER} sh -c "git clone --depth=1 https://github.com/freechipsproject/firrtl.git -b v1.4.3 \${HOME}/.firrtl"
 sudo -u ${UBLUSER} sh -c "cd \${HOME}/.firrtl && sbt compile"
