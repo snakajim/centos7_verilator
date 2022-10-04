@@ -72,7 +72,7 @@ RUN echo "now building...."
 RUN echo "include_only=.jp" >> /etc/yum/pluginconf.d/fastestmirror.conf
 RUN yum clean all
 RUN yum -y install kernel-devel kernel-headers
-RUN yum -y install cmake git wget.x86_64 tar motif xterm emacs nano curl
+RUN yum -y install cmake git wget tar motif xterm emacs nano curl
 RUN yum -y install xz rclone tkcvs graphviz xxd gtkwave time
 RUN yum -y install xorg-x11-apps xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils
 RUN yum -y install perl-CPAN
