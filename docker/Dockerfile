@@ -28,7 +28,7 @@
 # 2. To run
 # $> docker run -d -P --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator
 # 3. To access from host via ssh
-# $> ssh -p xxxx ${UBLUSER}@localhost (as "${UBLUSER}" passwd)
+# $> ssh -p xxxx ${USER_INIT}@localhost (as "${USER_INIT}" passwd)
 # or
 # $> ssh -p xxxx root@localhost (as "root" passwd)
 #
@@ -36,7 +36,8 @@ FROM centos:7
 LABEL maintainer="nsatoshi"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
-ARG UBLUSER="user0"
+# default user ID, you can override by --build-arg USER_INIT='any_name'
+ARG USER_INIT="user0"
 
 #
 # 2020/Nov/08, patch for systemd D-Bus known bug in CENTOS7.
@@ -81,18 +82,31 @@ RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsyn
 RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
+# Install openssl and set sshd_config, exporse port 22
+#  ---------------------------------------------------------------------------------
+RUN yum -y install openssh-server openssh-clients xeyes
+RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
+RUN sed -i 's/^#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
+RUN sed -i 's/^#AllowTcpForwarding yes/AllowTcpForwarding yes/' /etc/ssh/sshd_config
+RUN systemctl enable sshd.service
+RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
+RUN echo 'root:root' | chpasswd
+
+#  ---------------------------------------------------------------------------------
 # User apps install as root
 #  ---------------------------------------------------------------------------------
 RUN mkdir -p ${HOME}/tmp
 
 #  ---------------------------------------------------------------------------------
-# Change gcc vertion to newer as root
+# Change gcc+base tools to newer as root
 #  ---------------------------------------------------------------------------------
 RUN mkdir -p /scripts
-ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
-RUN chmod +x /scripts/change_gcc_ver.sh
-RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
-#RUN /scripts/change_gcc_ver.sh
+#ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
+#RUN chmod +x /scripts/change_gcc_ver.sh
+#RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
+#RUN /scripts/change_gcc_ver.sh #libtool --finish /usr/libexec/gcc/x86_64-pc-linux-gnu/9.4.0
 RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_gcc_cmake_git_as_default.sh \
   > /scripts/install_gcc_cmake_git_as_default.sh
 RUN chmod +x /scripts/install_gcc_cmake_git_as_default.sh
@@ -126,29 +140,17 @@ RUN mkdir -p ${HOME}/work && cd ${HOME}/work && curl -L https://www.scala-sbt.or
 RUN mv ${HOME}/work/sbt-rpm.repo /etc/yum.repos.d/
 RUN yum -y install sbt-1.5.5-0.noarch
 
-#  ---------------------------------------------------------------------------------
-# Install openssl and set sshd_config, exporse port 22
-#  ---------------------------------------------------------------------------------
-RUN yum -y install openssh-server openssh-clients xeyes
-RUN sed -i 's/^#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed -i 's/^#X11DisplayOffset 10/X11DisplayOffset 10/' /etc/ssh/sshd_config
-RUN sed -i 's/^#X11UseLocalhost yes/X11UseLocalhost yes/' /etc/ssh/sshd_config
-RUN sed -i 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
-RUN sed -i 's/^#AllowTcpForwarding yes/AllowTcpForwarding yes/' /etc/ssh/sshd_config
-RUN systemctl enable sshd.service
-RUN ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
-RUN echo 'root:root' | chpasswd
 
 #  ---------------------------------------------------------------------------------
-# add ${UBLUSER} as wheel group
+# add ${USER_INIT} as wheel group
 #  ---------------------------------------------------------------------------------
-RUN useradd -m -b /home -s /bin/bash ${UBLUSER}
-RUN echo ${UBLUSER}:${UBLUSER} | chpasswd
+RUN useradd -m -b /home -s /bin/bash ${USER_INIT}
+RUN echo ${USER_INIT}:${USER_INIT} | chpasswd
 RUN sed -i 's/^# %wheel\s*ALL=(ALL)\s*NOPASSWD: ALL/ %wheel        ALL=(ALL)       NOPASSWD: ALL/' /etc/sudoers
-RUN usermod -aG wheel ${UBLUSER}
-RUN sudo -u ${UBLUSER} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
-RUN sudo -u ${UBLUSER} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
-RUN sudo -u ${UBLUSER} sh -c 'chmod 600 ~/.ssh/*'
+RUN usermod -aG wheel ${USER_INIT}
+RUN sudo -u ${USER_INIT} sh -c 'ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa_test' 
+RUN sudo -u ${USER_INIT} sh -c 'cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys'
+RUN sudo -u ${USER_INIT} sh -c 'chmod 600 ~/.ssh/*'
 #  ---------------------------------------------------------------------------------
 # install user apps by install_userapps.sh
 #  ---------------------------------------------------------------------------------
@@ -171,7 +173,7 @@ RUN chmod +x /etc/supervisord.conf
 # reset container
 #  ---------------------------------------------------------------------------------
 RUN rm -rf /root/tmp/*
-RUN cd /home/${UBLUSER}
+RUN cd /home/${USER_INIT}
 CMD echo "now build completed... > docker push nsatoshi/centos7-verilator"
 EXPOSE 22
 CMD ["/usr/bin/supervisord"]
