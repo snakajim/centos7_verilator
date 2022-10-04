@@ -60,8 +60,8 @@ CMD ["/usr/sbin/init"]
 # install standard apps
 #
 RUN yum -y install epel-release
-RUN yum -y install elrepo-release
-RUN yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+#RUN yum -y install elrepo-release
+#RUN yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 RUN yum -y update --skip-broken
 RUN yum -y upgrade
 RUN yum -y groupinstall "Development Tools"
@@ -79,6 +79,8 @@ RUN yum -y install perl-CPAN
 RUN yum -y install python3 python3-devel python3-pip scons
 RUN yum -y install openssh-server openssh-clients
 RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync nano sudo
+RUN pip3 install cython
+RUN pip3 install numpy
 RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
