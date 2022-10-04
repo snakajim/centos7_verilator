@@ -79,9 +79,6 @@ RUN yum -y install perl-CPAN
 RUN yum -y install python3 python3-devel python3-pip scons
 RUN yum -y install openssh-server openssh-clients
 RUN yum -y install bison flex locales htop clang cpanminus subversion aria2 rsync nano sudo
-RUN pip3 install cython
-RUN pip3 install numpy
-RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
 # Install openssl and set sshd_config, exporse port 22
@@ -114,6 +111,13 @@ RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/i
 RUN chmod +x /scripts/install_gcc_cmake_git_as_default.sh
 RUN sed -i 's/\r//' /scripts/install_gcc_cmake_git_as_default.sh
 RUN /scripts/install_gcc_cmake_git_as_default.sh
+
+#  ---------------------------------------------------------------------------------
+# Install Python modules after changing cmake version
+#  ---------------------------------------------------------------------------------
+RUN pip3 install cython
+RUN pip3 install numpy
+RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
 # Install llvm as root
