@@ -1,0 +1,13 @@
+version: '3'
+services:
+  nginx_ssh_centos7:
+    build:
+      context: ./docker
+      dockerfile: ./Dockerfile
+      args:
+      - USER_INIT=user0
+    image: ssh_centos7:latest
+    container_name: my_ssh
+    hostname: my_ssh
+    ports:
+    - "55000-55100:22"
