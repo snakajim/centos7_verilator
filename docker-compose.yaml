@@ -1,12 +1,12 @@
 version: '3'
 services:
-  nsatoshi/centos7-verilator:
+  centos7-verilator:
     build:
       context: ./docker
       dockerfile: ./Dockerfile
       args:
       - USER_INIT=user0
-    image: nsatoshi/centos7-verilator:latest
+    image: centos7-verilator:latest
     container_name: my_verilator
     hostname: my_verilator
     ports:
