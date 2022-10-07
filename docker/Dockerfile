@@ -102,10 +102,6 @@ RUN mkdir -p ${HOME}/tmp
 # Change gcc+base tools to newer as root
 #  ---------------------------------------------------------------------------------
 RUN mkdir -p /scripts
-#ADD ./change_gcc_ver.sh /scripts/change_gcc_ver.sh
-#RUN chmod +x /scripts/change_gcc_ver.sh
-#RUN sed -i 's/\r//' /scripts/change_gcc_ver.sh
-#RUN /scripts/change_gcc_ver.sh #libtool --finish /usr/libexec/gcc/x86_64-pc-linux-gnu/9.4.0
 RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_gcc_cmake_git_as_default.sh \
   > /scripts/install_gcc_cmake_git_as_default.sh
 RUN chmod +x /scripts/install_gcc_cmake_git_as_default.sh
@@ -117,7 +113,7 @@ RUN /scripts/install_gcc_cmake_git_as_default.sh
 #  ---------------------------------------------------------------------------------
 RUN pip3 install cython
 RUN pip3 install numpy
-RUN pip3 install z3-solver pyyaml numpy pandas openpyxl pydot
+RUN pip3 install z3-solver pyyaml pandas openpyxl pydot
 
 #  ---------------------------------------------------------------------------------
 # Install llvm as root
@@ -131,7 +127,6 @@ RUN /scripts/install_llvm.sh
 #  ---------------------------------------------------------------------------------
 # Install verilator as root
 #  ---------------------------------------------------------------------------------
-#ADD ./install_verilator.sh /scripts/install_verilator.sh
 RUN curl https://raw.githubusercontent.com/snakajim/centos7_install_tools/main/install_verilator.sh \
  > /scripts/install_verilator.sh
 RUN chmod +x /scripts/install_verilator.sh

@@ -10,33 +10,65 @@ See docker/Dockerfile.
 Everytime making tag(~6 mo), uploading image as well. 
 https://hub.docker.com/repository/docker/nsatoshi/centos7-verilator
 
-## How To run
+## How To Build for both Linux and Windows10 users
 
-Start docker. 
+For your docker build, 
 
 ```
-$> docker run -d -p 20022:22 --name eda --hostname cs7 --restart=always nsatoshi/centos7-verilator:latest
+$> docker-compose build
 ```
 
-In this example port 20022 in host is used to ssh access, you can modify it as you want.
+The contaier build is supporting both x86_64 and arm64 architecture.
 
+| c6i.2xlarge(8xCPU) | c6g.2xlarge(8xCPU)|
+|--------------------| ------------------|
+| 159m16.698s        | 197m43.996s |
 
-Then ssh connect. user0 password is set to "user0".
+Or you can pull pre-build image from docker hub instead(x86_64 only).
 ```
-$> docker port eda 22/tcp
-$> ssh -p 20022 user0@localhost
+$> docker pull nsatoshi/centos7-verilator:latest
 ```
 
-## Trouble shooting
+## How to Start container and ssh login
 
-If you have ssh connection issue, please test using xeyes-ssh/Dockerfile.
+Start container as daemon mode.
+```
+$> docker-compose up -d
+```
+
+### Linux user
+In linux system, you can find which port has been asigned to Docker ssh.
+```
+export PORT22=`sh -c "docker container port my_verilator 22/tcp | sed -E "1s/^.+://" | head -n 1"`
+```
+
+Then ssh connect from your host. user0 password is set to "user0".
+```
+$> ssh -X -p ${PORT22} user0@localhost
+```
+
+Or you can register the ssh connection in your ~/.ssh/config. This is often used for VS Code Remote Explore.
+```
+Host LocalDocker
+    HostName localhost
+    User user0
+    Port <set your port>
+    ForwardX11 yes
+    ServerAliveInterval 120
+    ServerAliveCountMax 60
+```
+
+### Windows 10 user
+In windows 10, you can check port the assignment from docker desktop application.
+
+Then ssh connect from your host. Recommending to use [MobaXterm](https://mobaxterm.mobatek.net/download-home-edition.html) as ssh terminal. user0 password is set to "user0".
 
 ## Tag History
 
-### 22-coming future(wish list)
+### 22.10 
 
-- Using multi-stage builds to reduce container size(TBD).
-- Supporting multi-arch
+- Supporting both x86_64 and aarch64 host.
+- docker-compose support.
 
 ### 21.12
 Adding ssh connection from host, and some of tool update.
